@@ -8,9 +8,12 @@ import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 public class RestController {
+    private static OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(20, TimeUnit.MINUTES) // Connection timeout
+            .readTimeout(20, TimeUnit.MINUTES)    // Read timeout
+            .build();
 
     public ResponseBody postAndRetrieveData(String url, String jsonBody) {
-        OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody requestBody = RequestBody.create(mediaType, jsonBody);
@@ -22,14 +25,10 @@ public class RestController {
                 .addHeader("Authorization", getBase64Authorization(ConfigProperties.getUserName(), ConfigProperties.getPassWord()))
                 .build();
 
-        return invokeRestService(client, request);
+        return invokeRestService(request);
     }
 
     public ResponseBody retrieveData(String url) {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS) // Connection timeout
-                .readTimeout(30, TimeUnit.SECONDS)    // Read timeout
-                .build();
 
         Request request = new Request.Builder()
                 .url(url)
@@ -37,10 +36,10 @@ public class RestController {
                 .addHeader("Authorization", getBase64Authorization(ConfigProperties.getUserName(), ConfigProperties.getPassWord()))
                 .build();
 
-        return invokeRestService(client, request);
+        return invokeRestService(request);
     }
 
-    private static ResponseBody invokeRestService(OkHttpClient client, Request request) {
+    private static ResponseBody invokeRestService(Request request) {
         ResponseBody responseBody = null;
         try {
             Response response = client.newCall(request).execute();

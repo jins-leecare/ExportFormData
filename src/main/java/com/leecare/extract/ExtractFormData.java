@@ -1,8 +1,6 @@
 package com.leecare.extract;
 
-import com.leecare.extract.model.ConfigProperties;
-import com.leecare.extract.model.FileAttachment;
-import com.leecare.extract.model.ResidentDetails;
+import com.leecare.extract.model.*;
 import com.leecare.extract.service.DataExtractionService;
 import com.leecare.extract.utils.StringUtils;
 import com.opencsv.CSVWriter;
@@ -13,10 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ExtractFormData {
     private static String formName = "";
@@ -26,6 +21,8 @@ public class ExtractFormData {
     private static Boolean gridForm = false;
     private static Boolean customGridForm = false;
     private static Boolean downloadAttachments = false;
+    private static String fromDate = "";
+    private static String toDate = "";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public static void main(String[] args) throws IOException {
@@ -55,6 +52,10 @@ public class ExtractFormData {
                     customGridForm = Boolean.valueOf(value);
                 } else if ("downloadAttachments".equals(key)) {
                     downloadAttachments = Boolean.valueOf(value);
+                } else if ("fromDate".equals(key)) {
+                    fromDate = value;
+                } else if ("toDate".equals(key)) {
+                    toDate = value;
                 } else {
                     System.out.println("Unknown params. Please check usage");
                 }
@@ -105,42 +106,67 @@ public class ExtractFormData {
     }
 
     private static void createCSVForForm(String formName, Map<String, String> fieldCaptionMapping, DataExtractionService dataExtractionService) {
-        String jsonBody = "{" +
-                "\"FormName\":\"" + formName + "\" , " +
-                "\"FilePath\":\"" + ConfigProperties.getFilePath() + "\" , " +
-                "\"CustomGridForm\": " + customGridForm +
-                "}";
-
-        Map<Integer, ResidentDetails> residentDetailsMap = dataExtractionService.extractFormData(facilityId, jsonBody);
         String folderPathToForms = createFolder(ConfigProperties.getFilePath(), "FORMS");
-        if (!subForm && !gridForm && !customGridForm) {
-            extractToCsvUnderFolder(
-                    folderPathToForms,
-                    "REGULAR-FORMS",
-                    fieldCaptionMapping,
-                    formName,
-                    residentDetailsMap);
-        } else if (subForm) {
-            extractToCsvUnderFolder(
-                    folderPathToForms,
-                    "SUB-FORMS",
-                    fieldCaptionMapping,
-                    formName,
-                    residentDetailsMap);
-        } else if (gridForm) {
-            extractToCsvUnderFolder(
+        if (gridForm) {
+            String jsonBody = "{" +
+                    "\"FormName\":\"" + formName + "\" , " +
+                    "\"FilePath\":\"" + ConfigProperties.getFilePath() + "\" , " +
+                    "\"FromDate\":\"" + fromDate + "\" , " +
+                    "\"ToDate\":\"" + toDate + "\" , " +
+                    "\"CustomGridForm\": " + customGridForm +
+                    "}";
+            Map<Integer, ResidentRecordDetails> residentDetailsMap = dataExtractionService.extractGridFormData(facilityId, jsonBody);
+            extractToCsvUnderFolderForGridForms(
                     folderPathToForms,
                     "GRID-FORMS",
                     fieldCaptionMapping,
                     formName,
                     residentDetailsMap);
-        } else if (customGridForm) {
-            extractToCsvUnderFolder(
+        } else if (subForm) {
+            String jsonBody = "{" +
+                    "\"FormName\":\"" + formName + "\" , " +
+                    "\"FilePath\":\"" + ConfigProperties.getFilePath() + "\" , " +
+                    "\"FromDate\":\"" + fromDate + "\" , " +
+                    "\"ToDate\":\"" + toDate + "\" , " +
+                    "\"CustomGridForm\": " + customGridForm +
+                    "}";
+            Map<Integer, ResidentRecordDetails> residentDetailsMap = dataExtractionService.extractGridFormData(facilityId, jsonBody);
+            extractToCsvUnderFolderForGridForms(
                     folderPathToForms,
-                    "CUSTOM-GRID-FORMS",
+                    "SUB-FORMS",
                     fieldCaptionMapping,
                     formName,
                     residentDetailsMap);
+        } else {
+            String jsonBody = "{" +
+                    "\"FormName\":\"" + formName + "\" , " +
+                    "\"FilePath\":\"" + ConfigProperties.getFilePath() + "\" , " +
+                    "\"CustomGridForm\": " + customGridForm +
+                    "}";
+
+            Map<Integer, ResidentDetails> residentDetailsMap = dataExtractionService.extractFormData(facilityId, jsonBody);
+            if (!subForm && !gridForm && !customGridForm) {
+                extractToCsvUnderFolder(
+                        folderPathToForms,
+                        "REGULAR-FORMS",
+                        fieldCaptionMapping,
+                        formName,
+                        residentDetailsMap);
+            } else if (subForm) {
+                extractToCsvUnderFolder(
+                        folderPathToForms,
+                        "SUB-FORMS",
+                        fieldCaptionMapping,
+                        formName,
+                        residentDetailsMap);
+            } else if (customGridForm) {
+                extractToCsvUnderFolder(
+                        folderPathToForms,
+                        "CUSTOM-GRID-FORMS",
+                        fieldCaptionMapping,
+                        formName,
+                        residentDetailsMap);
+            }
         }
     }
 
@@ -151,10 +177,163 @@ public class ExtractFormData {
             String formName,
             Map<Integer, ResidentDetails> residentDetailsList) {
         String subFolderPath = createFolder(filePath, subFolder);
-        generateCSV(
-                residentDetailsList,
-                subFolderPath + sanitizeFilename(fieldNameCaptionMapping.getOrDefault(formName, formName)) + ".csv",
-                fieldNameCaptionMapping);
+            generateCSV(
+                    residentDetailsList,
+                    subFolderPath + sanitizeFilename(fieldNameCaptionMapping.getOrDefault(formName, formName)) + ".csv",
+                    fieldNameCaptionMapping);
+    }
+
+    private static void extractToCsvUnderFolderForGridForms(
+            String filePath,
+            String subFolder,
+            Map<String, String> fieldNameCaptionMapping,
+            String formName,
+            Map<Integer, ResidentRecordDetails> residentDetailsMap) {
+        String subFolderPath = createFolder(filePath, subFolder);
+        String csvFilePath = subFolderPath + sanitizeFilename(fieldNameCaptionMapping.getOrDefault(formName, formName)) + ".csv";
+
+        if (!residentDetailsMap.isEmpty()) {
+
+            try (CSVWriter writer = new CSVWriter(new FileWriter(csvFilePath))) {
+                // Write CSV header
+                List<String> headerList = new ArrayList<>();
+                headerList.add("residentId");
+                headerList.add("facilityName");
+                headerList.add("residentName");
+                headerList.add("dateOfBirth");
+                headerList.add("RecordID");
+                headerList.add("DateCreated");
+
+                Set<String> fieldNames = new HashSet<>();
+
+                for (ResidentRecordDetails resident : residentDetailsMap.values()) {
+                    for (String newFieldName : resident.getFieldValueMap().keySet()) {
+                        if (!fieldNames.contains(newFieldName)) {
+                            String caption = fieldNameCaptionMapping.getOrDefault(newFieldName, newFieldName);
+                            headerList.add(escapeField(caption));
+                            fieldNames.add(newFieldName);
+                        }
+                    }
+                }
+
+                writer.writeNext(headerList.toArray(new String[0]));
+
+                // Iterate through the residentDetailsMap
+                for (Map.Entry<Integer, ResidentRecordDetails> residentEntry : residentDetailsMap.entrySet()) {
+                    Integer residentID = residentEntry.getKey();
+                    ResidentRecordDetails residentDetails = residentEntry.getValue();
+
+                    // Extract all distinct recordIDs for the current resident
+                    Set<Integer> recordIDs = extractRecordIDs(residentDetails);
+                    Boolean residentInserted = false;
+                    for (Integer recordID : recordIDs) {
+                        List<String> row = new ArrayList<>();
+                        if (!residentInserted) {
+                            row.add(residentID.toString());
+                            row.add(residentDetails.getFacilityName());
+                            row.add(residentDetails.getResidentName());
+                            row.add(DATE_FORMAT.format(residentDetails.getDateOfBirth()));
+                        } else {
+                            row.add("");
+                            row.add("");
+                            row.add("");
+                            row.add("");
+                        }
+                        residentInserted = true;
+                        row.add(recordID.toString());
+                        Map<String, FieldValueDetails> fieldValues = extractFieldValues(residentDetails, recordID, fieldNames);
+                        row.add(DATE_FORMAT.format(getRecordDate(fieldValues)));
+
+                        // Get the field values for the current resident and recordID
+                        // Add field values to the row
+                        for (String fieldName : fieldNames) {
+                            row.add(getFieldValue(fieldValues.get(fieldName)));
+                        }
+
+                        writer.writeNext(row.toArray(new String[0]));
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static Date getRecordDate(Map<String, FieldValueDetails> fieldValues) {
+        Date date = null;
+        for (Map.Entry<String, FieldValueDetails> entry : fieldValues.entrySet()) {
+            String key = entry.getKey();
+            FieldValueDetails value = entry.getValue();
+
+            // Assuming FieldValueDetails has a method called getDate() to retrieve the date
+            date = value.getDateCreated();
+
+            if (date != null) {
+                break; // Exit the loop when a non-null date is found
+            }
+        }
+        return date;
+    }
+
+    private static Set<String> extractFieldNames(Map<Integer, ResidentRecordDetails> residentDetailsMap) {
+        Set<String> fieldNames = new LinkedHashSet<>();
+        for (ResidentRecordDetails residentDetails : residentDetailsMap.values()) {
+            fieldNames.addAll(residentDetails.getFieldValueMap().keySet());
+        }
+        return fieldNames;
+    }
+
+    private static Set<Integer> extractRecordIDs(ResidentRecordDetails residentDetails) {
+        Set<Integer> recordIDs = new LinkedHashSet<>();
+        for (Map<Integer, FieldValueDetails> recordEntry : residentDetails.getFieldValueMap().values()) {
+            recordIDs.addAll(recordEntry.keySet());
+        }
+        return recordIDs;
+    }
+
+    private static Map<String, FieldValueDetails> extractFieldValues(
+            ResidentRecordDetails residentDetails,
+            Integer recordID,
+            Set<String> fieldNames
+    ) {
+        Map<String, FieldValueDetails> fieldValues = new LinkedHashMap<>();
+        for (String fieldName : fieldNames) {
+            FieldValueDetails fieldValueDetails = getFieldValuesForRecord(
+                    residentDetails.getFieldValueMap(),
+                    fieldName,
+                    recordID
+            );
+            fieldValues.put(fieldName, fieldValueDetails);
+        }
+        return fieldValues;
+    }
+
+    private static String getFieldValue(FieldValueDetails fieldValueDetails) {
+        if(Objects.nonNull(fieldValueDetails)) {
+            if (StringUtils.isNotEmpty(fieldValueDetails.getFieldValue())) {
+                return fieldValueDetails.getFieldValue();
+            } else if (Objects.nonNull(fieldValueDetails.getValueDate())) {
+                return formatDate(fieldValueDetails.getValueDate());
+            }
+        }
+        return "";
+    }
+
+    private static String formatDate(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return dateFormat.format(date);
+    }
+
+    private static FieldValueDetails getFieldValuesForRecord(
+            Map<String, Map<Integer, FieldValueDetails>> fieldValueMap,
+            String fieldName,
+            Integer recordID
+    ) {
+        Map<Integer, FieldValueDetails> fieldValuesMap = fieldValueMap.get(fieldName);
+        if (fieldValuesMap != null) {
+            return fieldValuesMap.get(recordID);
+        }
+        return null;
     }
 
     private static void generateCSV(

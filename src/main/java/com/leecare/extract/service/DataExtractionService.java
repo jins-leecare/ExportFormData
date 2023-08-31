@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leecare.extract.model.ConfigProperties;
 import com.leecare.extract.model.FileAttachment;
 import com.leecare.extract.model.ResidentDetails;
+import com.leecare.extract.model.ResidentRecordDetails;
+
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
@@ -28,6 +30,19 @@ public class DataExtractionService {
             }
             return resultMap;
         }
+
+    public Map<Integer, ResidentRecordDetails> extractGridFormData(String facilityId, String jsonBody) {
+        String url = ConfigProperties.getUrl() + "/api/v1/facilities/" + Integer.parseInt(facilityId) + "/dataextract/extractFormDataForRange";
+        ResponseBody responseBody =  restController.postAndRetrieveData(url, jsonBody);
+        Map<Integer, ResidentRecordDetails> resultMap = null;
+        try {
+            TypeReference<Map<Integer, ResidentRecordDetails>> typeReference = new TypeReference<Map<Integer, ResidentRecordDetails>>() {};
+            resultMap = objectMapper.readValue(responseBody.string(), typeReference);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return resultMap;
+    }
 
     public List<String> extractFormNames(Boolean subForm, Integer facilityId, Boolean gridForm, Boolean customGridForm) {
         String url = ConfigProperties.getUrl() + "/api/v1/facilities/" + facilityId + "/dataextract/extractFormNames";
