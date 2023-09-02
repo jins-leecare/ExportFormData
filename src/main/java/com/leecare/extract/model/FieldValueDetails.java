@@ -11,7 +11,7 @@ public class FieldValueDetails implements Serializable {
     private Integer schemaID;
     private Date valueDate;
     private Double valueNumber;
-
+    private String valueBit;
     public FieldValueDetails() {
     }
     /**
@@ -24,6 +24,7 @@ public class FieldValueDetails implements Serializable {
      * @param aSchemaID
      * @param aValueDate
      * @param aValueNumber
+     * @param aValueBit
      */
     public FieldValueDetails(
             Integer aRecordID,
@@ -32,7 +33,8 @@ public class FieldValueDetails implements Serializable {
             Integer aBatchID,
             Integer aSchemaID,
             Date aValueDate,
-            Double aValueNumber) {
+            Double aValueNumber,
+            String aValueBit) {
         super();
         recordID = aRecordID;
         fieldValue = aFieldValue;
@@ -41,6 +43,7 @@ public class FieldValueDetails implements Serializable {
         schemaID = aSchemaID;
         valueDate = aValueDate;
         valueNumber = aValueNumber;
+        valueBit = aValueBit;
     }
     /**
      * @return the recordID
@@ -127,4 +130,11 @@ public class FieldValueDetails implements Serializable {
     public void setValueNumber(Double aValueNumber) {
         valueNumber = aValueNumber;}
 
+    public String getValueBit() {
+        return valueBit;
+    }
+
+    public void setValueBit(String valueBit) {
+        this.valueBit = valueBit;
+    }
 }

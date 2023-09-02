@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ExtractFormData {
     private static String formName = "";
@@ -107,13 +108,25 @@ public class ExtractFormData {
 
     private static void createCSVForForm(String formName, Map<String, String> fieldCaptionMapping, DataExtractionService dataExtractionService) {
         String folderPathToForms = createFolder(ConfigProperties.getFilePath(), "FORMS");
-        if (gridForm) {
+        if (!subForm && !gridForm && !customGridForm) {
+            String jsonBody = "{" +
+                    "\"FormName\":\"" + formName + "\" , " +
+                    "\"FilePath\":\"" + ConfigProperties.getFilePath() +
+                    "}";
+
+            Map<Integer, ResidentDetails> residentDetailsMap = dataExtractionService.extractFormData(facilityId, jsonBody);
+            extractToCsvUnderFolder(
+                    folderPathToForms,
+                    "REGULAR-FORMS",
+                    fieldCaptionMapping,
+                    formName,
+                    residentDetailsMap);
+        } else if (gridForm) {
             String jsonBody = "{" +
                     "\"FormName\":\"" + formName + "\" , " +
                     "\"FilePath\":\"" + ConfigProperties.getFilePath() + "\" , " +
                     "\"FromDate\":\"" + fromDate + "\" , " +
-                    "\"ToDate\":\"" + toDate + "\" , " +
-                    "\"CustomGridForm\": " + customGridForm +
+                    "\"ToDate\":\"" + toDate +
                     "}";
             Map<Integer, ResidentRecordDetails> residentDetailsMap = dataExtractionService.extractGridFormData(facilityId, jsonBody);
             extractToCsvUnderFolderForGridForms(
@@ -127,8 +140,7 @@ public class ExtractFormData {
                     "\"FormName\":\"" + formName + "\" , " +
                     "\"FilePath\":\"" + ConfigProperties.getFilePath() + "\" , " +
                     "\"FromDate\":\"" + fromDate + "\" , " +
-                    "\"ToDate\":\"" + toDate + "\" , " +
-                    "\"CustomGridForm\": " + customGridForm +
+                    "\"ToDate\":\"" + toDate +
                     "}";
             Map<Integer, ResidentRecordDetails> residentDetailsMap = dataExtractionService.extractGridFormData(facilityId, jsonBody);
             extractToCsvUnderFolderForGridForms(
@@ -137,36 +149,21 @@ public class ExtractFormData {
                     fieldCaptionMapping,
                     formName,
                     residentDetailsMap);
-        } else {
+        } else if (customGridForm) {
             String jsonBody = "{" +
                     "\"FormName\":\"" + formName + "\" , " +
                     "\"FilePath\":\"" + ConfigProperties.getFilePath() + "\" , " +
+                    "\"FromDate\":\"" + fromDate + "\" , " +
+                    "\"ToDate\":\"" + toDate + "\" , " +
                     "\"CustomGridForm\": " + customGridForm +
                     "}";
-
-            Map<Integer, ResidentDetails> residentDetailsMap = dataExtractionService.extractFormData(facilityId, jsonBody);
-            if (!subForm && !gridForm && !customGridForm) {
-                extractToCsvUnderFolder(
-                        folderPathToForms,
-                        "REGULAR-FORMS",
-                        fieldCaptionMapping,
-                        formName,
-                        residentDetailsMap);
-            } else if (subForm) {
-                extractToCsvUnderFolder(
-                        folderPathToForms,
-                        "SUB-FORMS",
-                        fieldCaptionMapping,
-                        formName,
-                        residentDetailsMap);
-            } else if (customGridForm) {
-                extractToCsvUnderFolder(
-                        folderPathToForms,
-                        "CUSTOM-GRID-FORMS",
-                        fieldCaptionMapping,
-                        formName,
-                        residentDetailsMap);
-            }
+            Map<Integer, ResidentRecordDetails> residentDetailsMap = dataExtractionService.extractGridFormData(facilityId, jsonBody);
+            extractToCsvUnderFolderForGridForms(
+                    folderPathToForms,
+                    "CUSTOM-GRID-FORMS",
+                    fieldCaptionMapping,
+                    formName,
+                    residentDetailsMap);
         }
     }
 
@@ -201,6 +198,7 @@ public class ExtractFormData {
                 headerList.add("facilityName");
                 headerList.add("residentName");
                 headerList.add("dateOfBirth");
+                headerList.add("NRICNumber");
                 headerList.add("RecordID");
                 headerList.add("DateCreated");
 
@@ -224,7 +222,7 @@ public class ExtractFormData {
                     ResidentRecordDetails residentDetails = residentEntry.getValue();
 
                     // Extract all distinct recordIDs for the current resident
-                    Set<Integer> recordIDs = extractRecordIDs(residentDetails);
+                    TreeSet<Integer> recordIDs = extractAndSortRecordIDs(residentDetails);
                     Boolean residentInserted = false;
                     for (Integer recordID : recordIDs) {
                         List<String> row = new ArrayList<>();
@@ -233,7 +231,9 @@ public class ExtractFormData {
                             row.add(residentDetails.getFacilityName());
                             row.add(residentDetails.getResidentName());
                             row.add(DATE_FORMAT.format(residentDetails.getDateOfBirth()));
+                            row.add(residentDetails.getNRICNumber());
                         } else {
+                            row.add("");
                             row.add("");
                             row.add("");
                             row.add("");
@@ -262,14 +262,14 @@ public class ExtractFormData {
     private static Date getRecordDate(Map<String, FieldValueDetails> fieldValues) {
         Date date = null;
         for (Map.Entry<String, FieldValueDetails> entry : fieldValues.entrySet()) {
-            String key = entry.getKey();
             FieldValueDetails value = entry.getValue();
+            if (value != null ) {
+                // Assuming FieldValueDetails has a method called getDate() to retrieve the date
+                date = value.getDateCreated();
 
-            // Assuming FieldValueDetails has a method called getDate() to retrieve the date
-            date = value.getDateCreated();
-
-            if (date != null) {
-                break; // Exit the loop when a non-null date is found
+                if (date != null) {
+                    break; // Exit the loop when a non-null date is found
+                }
             }
         }
         return date;
@@ -283,12 +283,11 @@ public class ExtractFormData {
         return fieldNames;
     }
 
-    private static Set<Integer> extractRecordIDs(ResidentRecordDetails residentDetails) {
-        Set<Integer> recordIDs = new LinkedHashSet<>();
-        for (Map<Integer, FieldValueDetails> recordEntry : residentDetails.getFieldValueMap().values()) {
-            recordIDs.addAll(recordEntry.keySet());
-        }
-        return recordIDs;
+    private static TreeSet<Integer> extractAndSortRecordIDs(ResidentRecordDetails residentDetails) {
+        return residentDetails.getFieldValueMap().values().stream()
+                .flatMap(recordEntry -> recordEntry.keySet().stream())
+                .sorted(new RecordDateComparator(residentDetails))
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     private static Map<String, FieldValueDetails> extractFieldValues(
@@ -314,6 +313,10 @@ public class ExtractFormData {
                 return fieldValueDetails.getFieldValue();
             } else if (Objects.nonNull(fieldValueDetails.getValueDate())) {
                 return formatDate(fieldValueDetails.getValueDate());
+            } else if (Objects.nonNull(fieldValueDetails.getValueBit())) {
+                return fieldValueDetails.getValueBit().equals("1") ? "true" : "false";
+            }  else if (Objects.nonNull(fieldValueDetails.getValueNumber())) {
+                return String.valueOf(fieldValueDetails.getValueNumber());
             }
         }
         return "";
@@ -351,6 +354,7 @@ public class ExtractFormData {
                 headerList.add("facilityName");
                 headerList.add("residentName");
                 headerList.add("dateOfBirth");
+                headerList.add("NRICNumber");
 
                 List<String> fieldNames = new ArrayList<>();
 
@@ -385,6 +389,7 @@ public class ExtractFormData {
                     recordList.add(resident.getFacilityName());
                     recordList.add(resident.getResidentName());
                     recordList.add(DATE_FORMAT.format(resident.getDateOfBirth()));
+                    recordList.add(resident.getNRICNumber());
 
                     Map<String, String> fieldValueMap = resident.getFieldValueMap();
                     for (String newFieldName : fieldNames) {
@@ -476,5 +481,38 @@ public class ExtractFormData {
             return "png";
         }
         return "";
+    }
+
+    static class RecordDateComparator implements Comparator<Integer> {
+        private final ResidentRecordDetails residentDetails;
+
+        public RecordDateComparator(ResidentRecordDetails residentDetails) {
+            this.residentDetails = residentDetails;
+        }
+
+        @Override
+        public int compare(Integer recordId1, Integer recordId2) {
+            FieldValueDetails fieldValue1 = findFieldValueDetails(recordId1);
+            FieldValueDetails fieldValue2 = findFieldValueDetails(recordId2);
+
+            if (fieldValue1 != null && fieldValue2 != null) {
+                Date date1 = fieldValue1.getDateCreated();
+                Date date2 = fieldValue2.getDateCreated();
+                if (date1 != null && date2 != null) {
+                    return date1.compareTo(date2);
+                }
+            }
+
+            return recordId1.compareTo(recordId2);
+        }
+
+        private FieldValueDetails findFieldValueDetails(Integer recordId) {
+            return residentDetails.getFieldValueMap().values().stream()
+                    .flatMap(recordEntry -> recordEntry.entrySet().stream())
+                    .filter(entry -> entry.getKey().equals(recordId))
+                    .findFirst()
+                    .map(Map.Entry::getValue)
+                    .orElse(null);
+        }
     }
 }
