@@ -45,6 +45,14 @@ public class FieldValueDetails implements Serializable {
         valueNumber = aValueNumber;
         valueBit = aValueBit;
     }
+
+    public FieldValueDetails(Integer recordID, String fieldValue, Date dateCreated, Date valueDate) {
+        this.recordID = recordID;
+        this.fieldValue = fieldValue;
+        this.dateCreated = dateCreated;
+        this.valueDate = valueDate;
+    }
+
     /**
      * @return the recordID
      */
