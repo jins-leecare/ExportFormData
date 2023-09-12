@@ -14,6 +14,7 @@ public class InputParameters {
     private Boolean medications = false;
     private String fromDate;
     private String toDate;
+    private Boolean tasks = false;
     private ConfigProperties configProperties;
 
     public String getFormName() {
@@ -118,6 +119,14 @@ public class InputParameters {
 
     public void setToDate(String toDate) {
         this.toDate = toDate;
+    }
+
+    public Boolean getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Boolean tasks) {
+        this.tasks = tasks;
     }
 
     public ConfigProperties getConfigProperties() {

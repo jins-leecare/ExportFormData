@@ -122,7 +122,7 @@ public class DataExtractionService {
     }
 
     public Map<Integer, ResidentRecordDetails> extractPrescriptionDetails(InputParameters parameters, String jsonBody) {
-        String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId()) + "/dataextract/extractPrecriptionDetails";
+        String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId()) + "/dataextract/extractPrescriptionDetails";
         ResponseBody responseBody = restController.postAndRetrieveData(parameters, url, jsonBody);
         Map<Integer, ResidentRecordDetails> resultMap = null;
         try {
@@ -142,6 +142,21 @@ public class DataExtractionService {
         Map<Integer, ResidentRecordDetails> resultMap = null;
         try {
             TypeReference<Map<Integer, ResidentRecordDetails>> typeReference = new TypeReference<Map<Integer, ResidentRecordDetails>>() {
+            };
+            resultMap = objectMapper.readValue(responseBody.string(), typeReference);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return resultMap;
+    }
+
+    public List<TasksRow> extractTaskDetails(InputParameters parameters, String jsonBody) {
+        String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId())
+                + "/dataextract/extractEvents";
+        ResponseBody responseBody = restController.postAndRetrieveData(parameters, url, jsonBody);
+        List<TasksRow> resultMap = null;
+        try {
+            TypeReference<List<TasksRow>> typeReference = new TypeReference<List<TasksRow>>() {
             };
             resultMap = objectMapper.readValue(responseBody.string(), typeReference);
         } catch (IOException e) {

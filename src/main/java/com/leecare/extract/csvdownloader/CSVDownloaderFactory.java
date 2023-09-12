@@ -21,6 +21,8 @@ public class CSVDownloaderFactory {
             return new PrescriptionsCSVDownloader(dataExtractionService);
         } else if (parameters.getMedications()) {
             return new MedicationsCSVDownloader(dataExtractionService);
+        } else if (parameters.getTasks()) {
+            return new TasksCSVDownloader(dataExtractionService);
         }  else {
             throw new IllegalArgumentException("Invalid Option: ");
         }

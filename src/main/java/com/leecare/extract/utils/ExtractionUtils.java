@@ -42,6 +42,8 @@ public class ExtractionUtils {
                     params.setFromDate(value);
                 } else if ("-toDate".equals(key)) {
                     params.setToDate(value);
+                } else if ("-tasks".equals(key)) {
+                    params.setTasks(Boolean.valueOf(value));
                 } else {
                     System.out.println("Unknown params. Please check usage");
                 }
