@@ -23,6 +23,9 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             Map<String, String> fieldNameCaptionMapping,
             String formName,
             Map<Integer, ResidentDetails> residentDetailsList) {
+        if (Objects.isNull(residentDetailsList) || residentDetailsList.isEmpty()) {
+            throw new IllegalStateException("Data is not available for export. Please re-evaluate your parameters.");
+        }
         String filePath = createFolder(params.getConfigProperties().getFilePath(), "FORMS");
         String subFolderPath = createFolder(filePath, subFolder);
         generateCSV(
@@ -36,7 +39,9 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             Map<String, String> fieldNameCaptionMapping,
             String formName,
             Map<Integer, ResidentRecordDetails> residentDetailsMap) {
-
+        if (Objects.isNull(residentDetailsMap) || residentDetailsMap.isEmpty()) {
+            throw new IllegalStateException("Data is not available for export. Please re-evaluate your parameters.");
+        }
         String filePath = createFolder(params.getConfigProperties().getFilePath(), "FORMS");
 
         String subFolderPath = createFolder(filePath, subFolder);

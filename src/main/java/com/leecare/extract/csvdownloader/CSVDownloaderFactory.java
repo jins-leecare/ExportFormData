@@ -23,8 +23,8 @@ public class CSVDownloaderFactory {
             return new MedicationsCSVDownloader(dataExtractionService);
         } else if (parameters.getTasks()) {
             return new TasksCSVDownloader(dataExtractionService);
-        }  else {
-            throw new IllegalArgumentException("Invalid Option: ");
+        } else {
+            throw new IllegalArgumentException("Invalid Option: Please provide correct parameters.");
         }
     }
 }

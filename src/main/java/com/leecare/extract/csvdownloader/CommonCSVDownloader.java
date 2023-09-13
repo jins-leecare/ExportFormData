@@ -15,14 +15,16 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class CommonCSVDownloader implements CSVDownloader {
+public abstract class CommonCSVDownloader<T> implements CSVDownloader {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public void downloadCSV(
             InputParameters params, String subFolder,
             String csvName,
-            List<TasksRow> rowList) {
-
+            List<T> rowList) {
+        if (Objects.isNull(rowList) || rowList.isEmpty()) {
+            throw new IllegalStateException("Data is not available for export. Please re-evaluate your parameters.");
+        }
         String filePath = createFolder(params.getConfigProperties().getFilePath(), "FORMS");
 
         String subFolderPath = createFolder(filePath, subFolder);
@@ -44,8 +46,8 @@ public abstract class CommonCSVDownloader implements CSVDownloader {
 
                 writer.writeNext(header.toArray(new String[0]));
 
-                // Iterate through the list and export each custom object
-                for (TasksRow obj : rowList) {
+                // Iterate through the list and export each object
+                for (T obj : rowList) {
                     List<Object> record = new ArrayList<>();
                     for (Field field : fields) {
                         field.setAccessible(true);

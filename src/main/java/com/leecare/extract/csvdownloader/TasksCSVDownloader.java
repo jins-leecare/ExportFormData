@@ -8,7 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class TasksCSVDownloader extends CommonCSVDownloader{
+public class TasksCSVDownloader extends CommonCSVDownloader<TasksRow> {
     DataExtractionService dataExtractionService;
 
     public TasksCSVDownloader(DataExtractionService dataExtractionService) {

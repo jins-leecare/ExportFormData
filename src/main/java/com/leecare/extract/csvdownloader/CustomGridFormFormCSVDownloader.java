@@ -10,6 +10,7 @@ import java.util.Objects;
 
 public class CustomGridFormFormCSVDownloader extends CommonFormCSVDownloader {
     DataExtractionService dataExtractionService;
+
     public CustomGridFormFormCSVDownloader(DataExtractionService dataExtractionService) {
         this.dataExtractionService = dataExtractionService;
     }
@@ -19,6 +20,9 @@ public class CustomGridFormFormCSVDownloader extends CommonFormCSVDownloader {
         Map<String, String> fieldCaptionMapping = dataExtractionService.extractFieldCaptionMapping(params);
         if (Objects.isNull(params.getFormName())) {
             List<String> formNames = dataExtractionService.extractFormNames(params);
+            if (Objects.isNull(formNames) || formNames.isEmpty()) {
+                throw new IllegalStateException("Data is not available for export. Please re-evaluate your parameters.");
+            }
             formNames.forEach(form -> {
                 retrieveDataAndDownloadCSV(params, fieldCaptionMapping, form);
             });

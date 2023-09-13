@@ -11,6 +11,7 @@ import java.util.Objects;
 
 public class GridFormFormCSVDownloader extends CommonFormCSVDownloader {
     DataExtractionService dataExtractionService;
+
     public GridFormFormCSVDownloader(DataExtractionService dataExtractionService) {
         this.dataExtractionService = dataExtractionService;
     }
@@ -20,6 +21,9 @@ public class GridFormFormCSVDownloader extends CommonFormCSVDownloader {
         Map<String, String> fieldCaptionMapping = dataExtractionService.extractFieldCaptionMapping(params);
         if (Objects.isNull(params.getFormName())) {
             List<String> formNames = dataExtractionService.extractFormNames(params);
+            if (Objects.isNull(formNames) || formNames.isEmpty()) {
+                throw new IllegalStateException("Data is not available for export. Please re-evaluate your parameters.");
+            }
             formNames.forEach(form -> {
                 retrieveDataAndDownloadCSV(params, fieldCaptionMapping, form);
             });

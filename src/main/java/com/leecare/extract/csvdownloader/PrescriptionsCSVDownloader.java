@@ -13,6 +13,7 @@ import java.util.Objects;
 public class PrescriptionsCSVDownloader extends CommonFormCSVDownloader {
 
     DataExtractionService dataExtractionService;
+
     public PrescriptionsCSVDownloader(DataExtractionService dataExtractionService) {
         this.dataExtractionService = dataExtractionService;
     }

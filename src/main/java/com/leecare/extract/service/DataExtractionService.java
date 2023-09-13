@@ -18,12 +18,14 @@ public class DataExtractionService {
         String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId()) + "/dataextract/extractFormData";
         ResponseBody responseBody = restController.postAndRetrieveData(parameters, url, jsonBody);
         Map<Integer, ResidentDetails> resultMap = null;
-        try {
-            TypeReference<Map<Integer, ResidentDetails>> typeReference = new TypeReference<Map<Integer, ResidentDetails>>() {
-            };
-            resultMap = objectMapper.readValue(responseBody.string(), typeReference);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (Objects.nonNull(responseBody)) {
+            try {
+                TypeReference<Map<Integer, ResidentDetails>> typeReference = new TypeReference<Map<Integer, ResidentDetails>>() {
+                };
+                resultMap = objectMapper.readValue(responseBody.string(), typeReference);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return resultMap;
     }
@@ -32,12 +34,14 @@ public class DataExtractionService {
         String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId()) + "/dataextract/extractFormDataForRange";
         ResponseBody responseBody = restController.postAndRetrieveData(parameters, url, jsonBody);
         Map<Integer, ResidentRecordDetails> resultMap = null;
-        try {
-            TypeReference<Map<Integer, ResidentRecordDetails>> typeReference = new TypeReference<Map<Integer, ResidentRecordDetails>>() {
-            };
-            resultMap = objectMapper.readValue(responseBody.string(), typeReference);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (Objects.nonNull(responseBody)) {
+            try {
+                TypeReference<Map<Integer, ResidentRecordDetails>> typeReference = new TypeReference<Map<Integer, ResidentRecordDetails>>() {
+                };
+                resultMap = objectMapper.readValue(responseBody.string(), typeReference);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return resultMap;
     }
@@ -50,23 +54,27 @@ public class DataExtractionService {
                 "\"CustomGridForm\": " + parameters.getCustomGridForm() +
                 "}";
         ResponseBody responseBody = restController.postAndRetrieveData(parameters, url, jsonBody);
-        List<String> resultMap = null;
-        try {
-            resultMap = objectMapper.readValue(responseBody.string(), List.class);
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<String> resultList = null;
+        if (Objects.nonNull(responseBody)) {
+            try {
+                resultList = objectMapper.readValue(responseBody.string(), List.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return resultMap;
+        return resultList;
     }
 
     public Map<String, String> extractFieldCaptionMapping(InputParameters parameters) {
         String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + parameters.getFacilityId() + "/dataextract/extractFieldCaptionMapping";
         ResponseBody responseBody = restController.retrieveData(parameters, url);
         Map<String, String> resultMap = null;
-        try {
-            resultMap = objectMapper.readValue(responseBody.string(), Map.class);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (Objects.nonNull(responseBody)) {
+            try {
+                resultMap = objectMapper.readValue(responseBody.string(), Map.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return resultMap;
     }
@@ -75,13 +83,15 @@ public class DataExtractionService {
         String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + parameters.getFacilityId() + "/dataextract/extractFileAttachments";
         ResponseBody responseBody = restController.retrieveData(parameters, url);
         List<FileAttachment> fileAttachments = null;
-        try {
-            TypeReference<List<FileAttachment>> typeReference = new TypeReference<List<FileAttachment>>() {
-            };
+        if (Objects.nonNull(responseBody)) {
+            try {
+                TypeReference<List<FileAttachment>> typeReference = new TypeReference<List<FileAttachment>>() {
+                };
 
-            fileAttachments = objectMapper.readValue(responseBody.string(), typeReference);
-        } catch (IOException e) {
-            e.printStackTrace();
+                fileAttachments = objectMapper.readValue(responseBody.string(), typeReference);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return fileAttachments;
     }
@@ -91,12 +101,14 @@ public class DataExtractionService {
                 + "fields=%5B\"ltcPersonID\",\"firstName\",\"lastName\",\"dateOfBirth\",\"nationalIDNumber\"%5D";
         ResponseBody responseBody = restController.retrieveData(parameters, url);
         List<Resident> residentDetails = null;
-        try {
-            TypeReference<List<Resident>> typeReference = new TypeReference<List<Resident>>() {
-            };
-            residentDetails = objectMapper.readValue(responseBody.string(), typeReference);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (Objects.nonNull(responseBody)) {
+            try {
+                TypeReference<List<Resident>> typeReference = new TypeReference<List<Resident>>() {
+                };
+                residentDetails = objectMapper.readValue(responseBody.string(), typeReference);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return residentDetails;
     }
@@ -106,17 +118,18 @@ public class DataExtractionService {
                 + residentID + "/bed-movements?"
                 + "fields=%5B\"effectiveDateAndTime\",\"bedMovementType\",\"leaveType\",\"createdTimestamp\",\"createdByUserID\"%5D";
         ResponseBody responseBody = restController.retrieveData(parameters, url);
-        List<BedMovement> bedMovements = null;
-        try {
 
-            if (Objects.nonNull(responseBody)) {
+        List<BedMovement> bedMovements = null;
+        if (Objects.nonNull(responseBody)) {
+            try {
                 String content = responseBody.string();
                 TypeReference<List<BedMovement>> typeReference = new TypeReference<List<BedMovement>>() {
                 };
                 bedMovements = objectMapper.readValue(content, typeReference);
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return bedMovements;
     }
@@ -125,12 +138,14 @@ public class DataExtractionService {
         String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId()) + "/dataextract/extractPrescriptionDetails";
         ResponseBody responseBody = restController.postAndRetrieveData(parameters, url, jsonBody);
         Map<Integer, ResidentRecordDetails> resultMap = null;
-        try {
-            TypeReference<Map<Integer, ResidentRecordDetails>> typeReference = new TypeReference<Map<Integer, ResidentRecordDetails>>() {
-            };
-            resultMap = objectMapper.readValue(responseBody.string(), typeReference);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (Objects.nonNull(responseBody)) {
+            try {
+                TypeReference<Map<Integer, ResidentRecordDetails>> typeReference = new TypeReference<Map<Integer, ResidentRecordDetails>>() {
+                };
+                resultMap = objectMapper.readValue(responseBody.string(), typeReference);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return resultMap;
     }
@@ -140,12 +155,14 @@ public class DataExtractionService {
                 + "/dataextract/extractMedicationsDetails";
         ResponseBody responseBody = restController.postAndRetrieveData(parameters, url, jsonBody);
         Map<Integer, ResidentRecordDetails> resultMap = null;
-        try {
-            TypeReference<Map<Integer, ResidentRecordDetails>> typeReference = new TypeReference<Map<Integer, ResidentRecordDetails>>() {
-            };
-            resultMap = objectMapper.readValue(responseBody.string(), typeReference);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (Objects.nonNull(responseBody)) {
+            try {
+                TypeReference<Map<Integer, ResidentRecordDetails>> typeReference = new TypeReference<Map<Integer, ResidentRecordDetails>>() {
+                };
+                resultMap = objectMapper.readValue(responseBody.string(), typeReference);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return resultMap;
     }
@@ -154,14 +171,16 @@ public class DataExtractionService {
         String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId())
                 + "/dataextract/extractEvents";
         ResponseBody responseBody = restController.postAndRetrieveData(parameters, url, jsonBody);
-        List<TasksRow> resultMap = null;
-        try {
-            TypeReference<List<TasksRow>> typeReference = new TypeReference<List<TasksRow>>() {
-            };
-            resultMap = objectMapper.readValue(responseBody.string(), typeReference);
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<TasksRow> resultList = null;
+        if (Objects.nonNull(responseBody)) {
+            try {
+                TypeReference<List<TasksRow>> typeReference = new TypeReference<List<TasksRow>>() {
+                };
+                resultList = objectMapper.readValue(responseBody.string(), typeReference);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return resultMap;
+        return resultList;
     }
 }
