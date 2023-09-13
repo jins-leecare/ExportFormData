@@ -17,11 +17,12 @@ import java.util.stream.Collectors;
 
 public abstract class CommonCSVDownloader<T> implements CSVDownloader {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat DATE_FORMAT1 = new SimpleDateFormat("yyyyMMdd");
 
     public void downloadCSV(
             InputParameters params, String subFolder,
             String csvName,
-            List<T> rowList) {
+            List<T> rowList, Map<Integer, Resident> residentMap) {
         if (Objects.isNull(rowList) || rowList.isEmpty()) {
             throw new IllegalStateException("Data is not available for export. Please re-evaluate your parameters.");
         }
@@ -40,6 +41,11 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
 
                 // Define the CSV header (field names)
                 List<String> header = new ArrayList<>();
+                header.add("residentId");
+                header.add("facilityName");
+                header.add("residentName");
+                header.add("dateOfBirth");
+                header.add("NRICNumber");
                 for (Field field : fields) {
                     header.add(field.getName());
                 }
@@ -47,8 +53,25 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
                 writer.writeNext(header.toArray(new String[0]));
 
                 // Iterate through the list and export each object
+                List<String> residentIds = new ArrayList<>();
                 for (T obj : rowList) {
                     List<Object> record = new ArrayList<>();
+                    TasksRow taskRow = (TasksRow) obj;
+                    if (!residentIds.contains(taskRow.getResidentID())) {
+                        Resident resident = residentMap.get(Integer.parseInt(taskRow.getResidentID()));
+                        record.add(taskRow.getResidentID());
+                        record.add("");
+                        record.add(taskRow.getResidentName());
+                        record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
+                        record.add(resident.getNationalIDNumber());
+                        residentIds.add(taskRow.getResidentID());
+                    } else {
+                        record.add("");
+                        record.add("");
+                        record.add("");
+                        record.add("");
+                        record.add("");
+                    }
                     for (Field field : fields) {
                         field.setAccessible(true);
                         try {
@@ -64,7 +87,7 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
 
                 System.out.println("CSV file exported successfully to " + filePath);
 
-            } catch (IOException e) {
+            } catch (IOException | ParseException e) {
                 e.printStackTrace();
             }
         }

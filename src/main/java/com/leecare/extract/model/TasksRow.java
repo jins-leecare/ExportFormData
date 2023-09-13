@@ -12,6 +12,7 @@ public class TasksRow implements Serializable {
     private String createdBy;
     private String performedBy;
     private String residentName;
+    private String residentID;
     private String status;
     private String location;
     private String comments;
@@ -109,6 +110,14 @@ public class TasksRow implements Serializable {
     /** @param aResidentName a Resident Name to set (not null) */
     public void setResidentName(String aResidentName) {
         residentName = aResidentName;
+    }
+
+    public String getResidentID() {
+        return residentID;
+    }
+
+    public void setResidentID(String residentID) {
+        this.residentID = residentID;
     }
 
     /** @return the Event Status (not null) */

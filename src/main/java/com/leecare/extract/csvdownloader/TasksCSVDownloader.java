@@ -22,6 +22,12 @@ public class TasksCSVDownloader extends CommonCSVDownloader<TasksRow> {
                 "\"ToDate\":\"" + params.getToDate() + "\"" +
                 "}";
         List<TasksRow> tasksRowList = dataExtractionService.extractTaskDetails(params, jsonBody);
-        super.downloadCSV(params, "TASKS", "tasks", tasksRowList);
+        Map<Integer, Resident> residentMap = new HashMap<>();
+        tasksRowList.forEach(tasksRow -> {
+            if(!residentMap.containsKey(tasksRow.getResidentID())) {
+                residentMap.putIfAbsent(Integer.valueOf(tasksRow.getResidentID()), dataExtractionService.extractResident(params, tasksRow.getResidentID()));
+            }
+        });
+        super.downloadCSV(params, "TASKS", "tasks", tasksRowList, residentMap);
     }
 }

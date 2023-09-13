@@ -113,6 +113,24 @@ public class DataExtractionService {
         return residentDetails;
     }
 
+    public Resident extractResident(InputParameters parameters, String residentID) {
+        String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + parameters.getFacilityId() + "/residents/"
+                + residentID + "?"
+                + "fields=%5B\"ltcPersonID\",\"firstName\",\"lastName\",\"dateOfBirth\",\"nationalIDNumber\"%5D";
+        ResponseBody responseBody = restController.retrieveData(parameters, url);
+        Resident residentDetail = null;
+        if (Objects.nonNull(responseBody)) {
+            try {
+                TypeReference<Resident> typeReference = new TypeReference<Resident>() {
+                };
+                residentDetail = objectMapper.readValue(responseBody.string(), typeReference);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return residentDetail;
+    }
+
     public List<BedMovement> extractBedMovements(InputParameters parameters, Integer residentID) {
         String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + parameters.getFacilityId() + "/residents/"
                 + residentID + "/bed-movements?"
