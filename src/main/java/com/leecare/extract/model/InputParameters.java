@@ -15,6 +15,7 @@ public class InputParameters {
     private String fromDate;
     private String toDate;
     private Boolean tasks = false;
+    private Boolean progressNotes = false;
     private ConfigProperties configProperties;
 
     public String getFormName() {
@@ -127,6 +128,14 @@ public class InputParameters {
 
     public void setTasks(Boolean tasks) {
         this.tasks = tasks;
+    }
+
+    public Boolean getProgressNotes() {
+        return progressNotes;
+    }
+
+    public void setProgressNotes(Boolean progressNotes) {
+        this.progressNotes = progressNotes;
     }
 
     public ConfigProperties getConfigProperties() {

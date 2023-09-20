@@ -19,12 +19,10 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final SimpleDateFormat DATE_FORMAT1 = new SimpleDateFormat("yyyyMMdd");
 
-    public void downloadCSV(
-            InputParameters params, String subFolder,
-            String csvName,
-            List<T> rowList, Map<Integer, Resident> residentMap) {
+    public void downloadCSV(InputParameters params, String subFolder, String csvName, List<T> rowList, Map<Integer, Resident> residentMap) {
         if (Objects.isNull(rowList) || rowList.isEmpty()) {
-            throw new IllegalStateException("Data is not available for export. Please re-evaluate your parameters.");
+            System.out.println("Data is not available for export. Please re-evaluate your parameters for downloading " + csvName);
+            return;
         }
         String filePath = createFolder(params.getConfigProperties().getFilePath(), "FORMS");
 
@@ -36,6 +34,16 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
 
             // Extract field names using reflection
             Field[] fields = objectClass.getDeclaredFields();
+            List<Field> fieldList = new ArrayList<>();
+            fieldList.addAll(Arrays.asList(fields));
+
+            objectClass = objectClass.getSuperclass();
+
+            while (objectClass != null) {
+                Field[] parentClassFields = objectClass.getDeclaredFields();
+                fieldList.addAll(Arrays.asList(parentClassFields));
+                objectClass = objectClass.getSuperclass();
+            }
 
             try (CSVWriter writer = new CSVWriter(new FileWriter(csvFilePath))) {
 
@@ -46,7 +54,7 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
                 header.add("residentName");
                 header.add("dateOfBirth");
                 header.add("NRICNumber");
-                for (Field field : fields) {
+                for (Field field : fieldList) {
                     header.add(field.getName());
                 }
 
@@ -56,23 +64,42 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
                 List<String> residentIds = new ArrayList<>();
                 for (T obj : rowList) {
                     List<Object> record = new ArrayList<>();
-                    TasksRow taskRow = (TasksRow) obj;
-                    if (!residentIds.contains(taskRow.getResidentID())) {
-                        Resident resident = residentMap.get(Integer.parseInt(taskRow.getResidentID()));
-                        record.add(taskRow.getResidentID());
-                        record.add("");
-                        record.add(taskRow.getResidentName());
-                        record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
-                        record.add(resident.getNationalIDNumber());
-                        residentIds.add(taskRow.getResidentID());
-                    } else {
-                        record.add("");
-                        record.add("");
-                        record.add("");
-                        record.add("");
-                        record.add("");
+                    if (obj instanceof TasksRow) {
+                        TasksRow taskRow = (TasksRow) obj;
+                        if (!residentIds.contains(taskRow.getResidentID())) {
+                            Resident resident = residentMap.get(Integer.parseInt(taskRow.getResidentID()));
+                            record.add(taskRow.getResidentID());
+                            record.add("");
+                            record.add(taskRow.getResidentName());
+                            record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
+                            record.add(resident.getNationalIDNumber());
+                            residentIds.add(String.valueOf(resident.getId()));
+                        } else {
+                            record.add("");
+                            record.add("");
+                            record.add("");
+                            record.add("");
+                            record.add("");
+                        }
+                    } else if(obj instanceof PersonNoteDetails) {
+                        PersonNoteDetails personNoteDetails = (PersonNoteDetails) obj;
+                        if (!residentIds.contains(String.valueOf(personNoteDetails.getPersonId()))) {
+                            Resident resident = residentMap.get(personNoteDetails.getPersonId());
+                            record.add(String.valueOf(personNoteDetails.getPersonId()));
+                            record.add("");
+                            record.add(personNoteDetails.getResidentName());
+                            record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
+                            record.add(resident.getNationalIDNumber());
+                            residentIds.add(String.valueOf(personNoteDetails.getPersonId()));
+                        } else {
+                            record.add("");
+                            record.add("");
+                            record.add("");
+                            record.add("");
+                            record.add("");
+                        }
                     }
-                    for (Field field : fields) {
+                    for (Field field : fieldList) {
                         field.setAccessible(true);
                         try {
                             Object value = field.get(obj);
@@ -84,9 +111,6 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
 
                     writer.writeNext(record.toArray(new String[0]));
                 }
-
-                System.out.println("CSV file exported successfully to " + filePath);
-
             } catch (IOException | ParseException e) {
                 e.printStackTrace();
             }
@@ -111,8 +135,7 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
     }
 
     private static String escapeField(String fieldValue) {
-        if (StringUtils.isNotEmpty(fieldValue)
-                && (fieldValue.contains(",") || fieldValue.contains("\""))) {
+        if (StringUtils.isNotEmpty(fieldValue) && (fieldValue.contains(",") || fieldValue.contains("\""))) {
             fieldValue = "\"" + fieldValue.replace("\"", "\"\"") + "\"";
         }
         if (StringUtils.isNullOrEmpty(fieldValue)) {
@@ -122,9 +145,7 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
     }
 
     private static String sanitizeFilename(String originalFilename) {
-        return originalFilename
-                .replaceAll("[^a-zA-Z0-9-_\\.]", "_")
-                .replaceAll("_+", "_");
+        return originalFilename.replaceAll("[^a-zA-Z0-9-_\\.]", "_").replaceAll("_+", "_");
     }
 
 }

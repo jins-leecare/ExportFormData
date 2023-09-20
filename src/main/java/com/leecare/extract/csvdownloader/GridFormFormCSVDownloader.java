@@ -22,7 +22,9 @@ public class GridFormFormCSVDownloader extends CommonFormCSVDownloader {
         if (Objects.isNull(params.getFormName())) {
             List<String> formNames = dataExtractionService.extractFormNames(params);
             if (Objects.isNull(formNames) || formNames.isEmpty()) {
-                throw new IllegalStateException("Data is not available for export. Please re-evaluate your parameters.");
+                System.out.println("Data is not available for export. Please re-evaluate your parameters for downloading "
+                        + "grid forms");
+                return;
             }
             formNames.forEach(form -> {
                 retrieveDataAndDownloadCSV(params, fieldCaptionMapping, form);

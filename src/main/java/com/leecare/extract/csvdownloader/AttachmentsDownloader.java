@@ -19,7 +19,9 @@ public class AttachmentsDownloader extends CommonFormCSVDownloader {
     public void downloadCSV(InputParameters params) throws IOException {
         List<FileAttachment> fileAttachments = dataExtractionService.extractFileAttachments(params);
         if (Objects.isNull(fileAttachments) || fileAttachments.isEmpty()) {
-            throw new IllegalStateException("Data is not available for export. Please re-evaluate your parameters.");
+            System.out.println("Data is not available for export. Please re-evaluate your parameters for downloading "
+                    + "attachments");
+            return;
         }
         saveFileAttachmentsToFolder(params, "ATTACHMENTS", fileAttachments);
     }

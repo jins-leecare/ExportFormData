@@ -44,7 +44,9 @@ public class ExtractionUtils {
                     params.setToDate(value);
                 } else if ("-tasks".equals(key)) {
                     params.setTasks(Boolean.valueOf(value));
-                } else {
+                } else if ("-progressNotes".equals(key)) {
+                    params.setProgressNotes(Boolean.valueOf(value));
+                }else {
                     System.out.println("Unknown params. Please check usage");
                 }
             }

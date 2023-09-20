@@ -1,12 +1,15 @@
 package com.leecare.extract.csvdownloader;
 
-import com.leecare.extract.model.*;
+import com.leecare.extract.model.InputParameters;
+import com.leecare.extract.model.Resident;
+import com.leecare.extract.model.TasksRow;
 import com.leecare.extract.service.DataExtractionService;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TasksCSVDownloader extends CommonCSVDownloader<TasksRow> {
     DataExtractionService dataExtractionService;

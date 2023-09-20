@@ -23,13 +23,15 @@ public class BedMovementCSVDownloader extends CommonFormCSVDownloader {
     public void downloadCSV(InputParameters params) throws IOException, ParseException {
         List<Resident> residentsList = dataExtractionService.extractResidents(params);
         if (Objects.isNull(residentsList) || residentsList.isEmpty()) {
-            throw new IllegalStateException("Data is not available for export. Please re-evaluate your parameters.");
+            System.out.println("Data is not available for export. Please re-evaluate your parameters for downloading bedMovements");
+            return;
         }
         Map<Integer, ResidentRecordDetails> residentDetailsMap = new HashMap<>();
         for (Resident resident : residentsList) {
             List<BedMovement> bedMovements = dataExtractionService.extractBedMovements(params, resident.getId());
             if (Objects.isNull(bedMovements) || bedMovements.isEmpty()) {
-                throw new IllegalStateException("Data is not available for export. Please re-evaluate your parameters.");
+                System.out.println("Data is not available for export. Please re-evaluate your parameters for downloading bedMovements");
+                return;
             } else {
                 ResidentRecordDetails residentRecordDetails = new ResidentRecordDetails();
                 residentRecordDetails.setResidentID(resident.getId());
