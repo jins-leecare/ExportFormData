@@ -21,9 +21,16 @@ public class ProgressNotesCSVDownloader extends CommonCSVDownloader<PersonNoteDe
     public void downloadCSV(InputParameters params) throws IOException, ParseException {
         String jsonBody = "{" +
                 "\"FromDate\":\"" + params.getFromDate() + "\" , " +
-                "\"ToDate\":\"" + params.getToDate() + "\"" +
+                "\"ToDate\":\"" + params.getToDate() + "\" , " +
+                "\"unReadOnly\":\"" + params.getUnReadOnly() + "\" , " +
+                "\"excludeUnadmittedResidentsFlag\":\"" + params.getExcludeUnadmittedResidentsFlag() + "\"" +
                 "}";
         List<PersonNoteDetails> personNoteDetails = dataExtractionService.extractProgressNotes(params, jsonBody);
+        if (Objects.isNull(personNoteDetails) || personNoteDetails.isEmpty()) {
+            System.out.println("Data is not available for export. Please re-evaluate your parameters for downloading "
+                    + "progress notes" );
+            return;
+        }
         Collections.sort(personNoteDetails, Comparator.comparingInt(PersonNoteDetails::getPersonId));
         Map<Integer, Resident> residentMap = new HashMap<>();
         personNoteDetails.forEach(personNote -> {

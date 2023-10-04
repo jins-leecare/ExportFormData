@@ -25,6 +25,10 @@ public class CSVDownloaderFactory {
             return new TasksCSVDownloader(dataExtractionService);
         } else if (parameters.getProgressNotes()) {
             return new ProgressNotesCSVDownloader(dataExtractionService);
+        } else if (parameters.getAdverseReaction()) {
+            return new AdverseReactionsCSVDownloader(dataExtractionService);
+        } else if (parameters.getPdfExtract()) {
+            return new ResidentPDFDownloader(dataExtractionService);
         } else {
             throw new IllegalArgumentException("Invalid Option: Please provide correct parameters.");
         }

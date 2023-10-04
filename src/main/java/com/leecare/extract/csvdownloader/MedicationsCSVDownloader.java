@@ -23,7 +23,10 @@ public class MedicationsCSVDownloader extends CommonFormCSVDownloader {
     private void retrieveDataAndDownloadCSV(InputParameters params, Map<String, String> fieldCaptionMapping) {
         String jsonBody = "{" +
                 "\"FromDate\":\"" + params.getFromDate() + "\" , " +
-                "\"ToDate\":\"" + params.getToDate() + "\"" +
+                "\"ToDate\":\"" + params.getToDate() + "\" , " +
+                "\"excludeUnadmittedResidentsFlag\":\"" + params.getExcludeUnadmittedResidentsFlag() + "\" , " +
+                "\"excludeArchivedResidentsFlag\":\"" + params.getExcludeArchivedResidentsFlag() + "\" , " +
+                "\"excludeReservedResidentsFlag\":\"" + params.getExcludeReservedResidentsFlag() + "\"" +
                 "}";
         Map<Integer, ResidentRecordDetails> residentDetailsMap = dataExtractionService.extractMedicationsDetails(params, jsonBody);
         super.downloadCSVForRange(params,

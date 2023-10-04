@@ -98,6 +98,25 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
                             record.add("");
                             record.add("");
                         }
+                    } else if(obj instanceof AdverseReactionDetails) {
+                        AdverseReactionDetails adverseReactionDetails = (AdverseReactionDetails) obj;
+                        if (!residentIds.contains(String.valueOf(adverseReactionDetails.getResidentId()))) {
+                            Resident resident = residentMap.get(adverseReactionDetails.getResidentId());
+                            record.add(String.valueOf(adverseReactionDetails.getResidentId()));
+                            record.add("");
+                            record.add(adverseReactionDetails.getResidentName());
+                            if (resident != null) {
+                                record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
+                                record.add(resident.getNationalIDNumber());
+                            }
+                            residentIds.add(String.valueOf(adverseReactionDetails.getResidentId()));
+                        } else {
+                            record.add("");
+                            record.add("");
+                            record.add("");
+                            record.add("");
+                            record.add("");
+                        }
                     }
                     for (Field field : fieldList) {
                         field.setAccessible(true);

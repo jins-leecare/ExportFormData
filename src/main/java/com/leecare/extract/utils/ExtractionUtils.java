@@ -42,10 +42,24 @@ public class ExtractionUtils {
                     params.setFromDate(value);
                 } else if ("-toDate".equals(key)) {
                     params.setToDate(value);
+                } else if ("-folderPath".equals(key)) {
+                    params.setFolderPath(value);
                 } else if ("-tasks".equals(key)) {
                     params.setTasks(Boolean.valueOf(value));
                 } else if ("-progressNotes".equals(key)) {
                     params.setProgressNotes(Boolean.valueOf(value));
+                } else if ("-adverseReactions".equals(key)) {
+                    params.setAdverseReaction(Boolean.valueOf(value));
+                } else if ("-pdfExtract".equals(key)) {
+                    params.setPdfExtract(Boolean.valueOf(value));
+                } else if ("-excludeUnadmittedResidentsFlag".equals(key)) {
+                    params.setExcludeUnadmittedResidentsFlag(Boolean.valueOf(value));
+                } else if ("-excludeArchivedResidentsFlag".equals(key)) {
+                    params.setExcludeArchivedResidentsFlag(Boolean.valueOf(value));
+                } else if ("-excludeReservedResidentsFlag".equals(key)) {
+                    params.setExcludeReservedResidentsFlag(Boolean.valueOf(value));
+                } else if ("-unReadOnly".equals(key)) {
+                    params.setUnReadOnly(Boolean.valueOf(value));
                 }else {
                     System.out.println("Unknown params. Please check usage");
                 }

@@ -22,7 +22,10 @@ public class RestController {
 
     public RestController() {
         SSLContext sslContext = createInsecureSSLContext();
-        this.client = ClientBuilder.newBuilder().sslContext(sslContext).build();
+        this.client = ClientBuilder.newBuilder()
+                .sslContext(sslContext)
+                .hostnameVerifier((hostname, session) -> true)
+                .build();
         client.register(JacksonJsonProvider.class);
 
     }

@@ -1,5 +1,7 @@
 package com.leecare.extract.model;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 public class InputParameters {
     private String formName;
     private String facilityId;
@@ -12,10 +14,17 @@ public class InputParameters {
     private Boolean bedMovement = false;
     private Boolean prescriptions = false;
     private Boolean medications = false;
+    private Boolean pdfExtract = false;
     private String fromDate;
     private String toDate;
+    private String folderPath;
     private Boolean tasks = false;
     private Boolean progressNotes = false;
+    private Boolean adverseReaction = false;
+    private Boolean excludeUnadmittedResidentsFlag = false;
+    private Boolean excludeArchivedResidentsFlag =false;
+    private Boolean excludeReservedResidentsFlag = false;
+    private Boolean unReadOnly = false;
     private ConfigProperties configProperties;
 
     public String getFormName() {
@@ -122,6 +131,14 @@ public class InputParameters {
         this.toDate = toDate;
     }
 
+    public String getFolderPath() {
+        return folderPath;
+    }
+
+    public void setFolderPath(String folderPath) {
+        this.folderPath = folderPath;
+    }
+
     public Boolean getTasks() {
         return tasks;
     }
@@ -133,9 +150,53 @@ public class InputParameters {
     public Boolean getProgressNotes() {
         return progressNotes;
     }
-
     public void setProgressNotes(Boolean progressNotes) {
         this.progressNotes = progressNotes;
+    }
+    public Boolean getAdverseReaction() {
+        return adverseReaction;
+    }
+    public void setAdverseReaction(Boolean adverseReaction) {
+        this.adverseReaction = adverseReaction;
+    }
+    public Boolean getPdfExtract() {
+        return pdfExtract;
+    }
+
+    public void setPdfExtract(Boolean pdfExtract) {
+        this.pdfExtract = pdfExtract;
+    }
+
+    public Boolean getExcludeUnadmittedResidentsFlag() {
+        return excludeUnadmittedResidentsFlag;
+    }
+
+    public void setExcludeUnadmittedResidentsFlag(Boolean excludeUnadmittedResidentsFlag) {
+        this.excludeUnadmittedResidentsFlag = excludeUnadmittedResidentsFlag;
+    }
+
+    public Boolean getExcludeArchivedResidentsFlag() {
+        return excludeArchivedResidentsFlag;
+    }
+
+    public void setExcludeArchivedResidentsFlag(Boolean excludeArchivedResidentsFlag) {
+        this.excludeArchivedResidentsFlag = excludeArchivedResidentsFlag;
+    }
+
+    public Boolean getExcludeReservedResidentsFlag() {
+        return excludeReservedResidentsFlag;
+    }
+
+    public void setExcludeReservedResidentsFlag(Boolean excludeReservedResidentsFlag) {
+        this.excludeReservedResidentsFlag = excludeReservedResidentsFlag;
+    }
+
+    public Boolean getUnReadOnly() {
+        return unReadOnly;
+    }
+
+    public void setUnReadOnly(Boolean unReadOnly) {
+        this.unReadOnly = unReadOnly;
     }
 
     public ConfigProperties getConfigProperties() {

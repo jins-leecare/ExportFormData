@@ -4,6 +4,7 @@ import com.leecare.extract.model.*;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,6 +13,7 @@ public class DataExtractionService {
     RestController restController = new RestController();
 
     public Map<Integer, ResidentDetails> extractFormData(InputParameters parameters, String jsonBody) {
+        System.out.println("DEBUG: DataExtract started for " + jsonBody + "at " + LocalDateTime.now());
         String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId()) + "/dataextract/extractFormData";
         Response response = restController.postAndRetrieveData(parameters, url, jsonBody);
         Map<Integer, ResidentDetails> resultMap = null;
@@ -22,10 +24,12 @@ public class DataExtractionService {
                 e.printStackTrace();
             }
         }
+        System.out.println("DEBUG: DataExtract Result Obtained for " + jsonBody + "at " + LocalDateTime.now());
         return resultMap;
     }
 
     public Map<Integer, ResidentRecordDetails> extractGridFormData(InputParameters parameters, String jsonBody) {
+        System.out.println("DEBUG: GRID FORM DataExtract started for " + jsonBody + "at "  + LocalDateTime.now());
         String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId()) + "/dataextract/extractFormDataForRange";
         Response response = restController.postAndRetrieveData(parameters, url, jsonBody);
         Map<Integer, ResidentRecordDetails> resultMap = null;
@@ -36,6 +40,7 @@ public class DataExtractionService {
                 e.printStackTrace();
             }
         }
+        System.out.println("DEBUG: GRID FORM DataExtract result obtained for " + jsonBody + "at " + LocalDateTime.now());
         return resultMap;
     }
 
@@ -45,7 +50,7 @@ public class DataExtractionService {
                 "\"GridForm\":\"" + parameters.getGridForm() + "\" , " +
                 "\"SubForm\":\"" + parameters.getSubForm() + "\" , " +
                 "\"CustomGridForm\":\"" + parameters.getCustomGridForm() + "\" , " +
-                "\"RegularForm\":\"" + parameters.getCustomGridForm() + "\"" +
+                "\"RegularForm\":\"" + parameters.getRegularForm() + "\"" +
                 "}";
         Response response = restController.postAndRetrieveData(parameters, url, jsonBody);
         List<String> resultList = null;
@@ -191,5 +196,31 @@ public class DataExtractionService {
             }
         }
         return resultList;
+    }
+
+    public List<AdverseReactionDetails> extractAdverseReactions(InputParameters parameters, String jsonBody) {
+        String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId())
+                + "/dataextract/extractAdverseReactions";
+        Response response = restController.postAndRetrieveData(parameters, url, jsonBody);
+        List<AdverseReactionDetails> resultList = null;
+        if (Objects.nonNull(response) && response.getStatus() == Response.Status.OK.getStatusCode()) {
+            try {
+                resultList = response.readEntity(new GenericType<List<AdverseReactionDetails>>() {});
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return resultList;
+    }
+
+    public Response downloadResidentDocuments(InputParameters parameters, String jsonBody) {
+        String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId())
+                + "/residents/documents";
+        Response response = restController.postAndRetrieveData(parameters, url, jsonBody);
+        List<PersonNoteDetails> resultList = null;
+        if (Objects.nonNull(response) && response.getStatus() == Response.Status.OK.getStatusCode()) {
+          return response;
+        }
+        return null;
     }
 }
