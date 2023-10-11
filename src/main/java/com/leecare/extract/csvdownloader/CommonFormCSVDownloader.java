@@ -80,13 +80,25 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                 for (ResidentRecordDetails resident : residentDetailsMap.values()) {
                     for (String newFieldName : resident.getFieldValueMap().keySet()) {
                         if (!fieldNames.contains(newFieldName)) {
-                            String caption = fieldNameCaptionMapping.getOrDefault(newFieldName, newFieldName);
-                            boolean captionHasValue = resident.getFieldValueMap().containsKey(newFieldName);
+                            FieldValueDetails fieldValueDetails = resident.getFieldValueMap()
+                                    .get(newFieldName).values().stream().findFirst().get();
+                            if (fieldValueDetails.getFieldCaption().equals(fieldValueDetails.getFieldName())) {
+                                String caption = fieldNameCaptionMapping.getOrDefault(newFieldName, newFieldName);
+                                boolean captionHasValue = resident.getFieldValueMap().containsKey(newFieldName);
 
-                            if (captionHasValue && fieldNameCaptionMapping.values().stream().filter(value -> value.equals(caption)).count() > 1) {
-                                headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
+                                if (captionHasValue && fieldNameCaptionMapping.values().stream().filter(value -> value.equals(caption)).count() > 1) {
+                                    headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
+                                } else {
+                                    headerList.add(escapeField(caption));
+                                }
                             } else {
-                                headerList.add(escapeField(caption));
+                                String caption = fieldValueDetails.getFieldCaption();
+                                if (resident.getFieldValueMap().get(newFieldName).values()
+                                        .stream().filter(value -> value.getFieldCaption().equals(caption)).count() > 1) {
+                                    headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
+                                } else {
+                                    headerList.add(escapeField(caption));
+                                }
                             }
                             fieldNames.add(newFieldName);
                         }
@@ -116,6 +128,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                             row.add(residentDetails.getResidentName());
                             row.add(DATE_FORMAT.format(residentDetails.getDateOfBirth()));
                             row.add(residentDetails.getNRICNumber());
+                            columnsWithValuesCount.put(residentID, 5);
                         } else {
                             row.add("");
                             row.add("");
@@ -127,6 +140,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                         row.add(recordID.toString());
                         Map<String, FieldValueDetails> fieldValues = extractFieldValues(residentDetails, recordID, fieldNames);
                         row.add(DATE_FORMAT.format(getRecordDate(fieldValues)));
+                        columnsWithValuesCount.put(residentID, columnsWithValuesCount.get(residentID) + 2);
 
                         // Get the field values for the current resident and recordID
                         // Add field values to the row
@@ -280,11 +294,11 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
 
                 // Append new field names if consistentFieldNames check fails
                 if (consistentFieldNames) {
-                    Map<String, String> fieldValueMap =
+                    Map<String, FieldValue> fieldValueMap =
                             aResidentDetailsMap.values().iterator().next().getFieldValueMap();
                     for (String fieldName : fieldValueMap.keySet()) {
-                        String caption = aFieldNameCaptionMapping.getOrDefault(fieldName, fieldName);
-                        if (aFieldNameCaptionMapping.values().stream().filter(value -> value.equals(caption)).count() > 1) {
+                        String caption = fieldValueMap.get(fieldName).getFieldCaption();
+                        if (fieldValueMap.values().stream().filter(value -> value.getFieldCaption().equals(caption)).count() > 1) {
                             headerList.add(escapeField(caption) + " (" + escapeField(fieldName) + ")");
                         } else {
                             headerList.add(escapeField(caption));
@@ -296,10 +310,9 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                     for (ResidentDetails resident : aResidentDetailsMap.values()) {
                         for (String newFieldName : resident.getFieldValueMap().keySet()) {
                             if (!fieldNames.contains(newFieldName)) {
-                                String caption = aFieldNameCaptionMapping.getOrDefault(newFieldName, newFieldName);
-                                boolean captionHasValue = resident.getFieldValueMap().containsKey(newFieldName);
-
-                                if (captionHasValue && aFieldNameCaptionMapping.values().stream().filter(value -> value.equals(caption)).count() > 1) {
+                                String caption = resident.getFieldValueMap().get(newFieldName).getFieldCaption();
+                                if (resident.getFieldValueMap().values().stream()
+                                        .filter(value -> value.getFieldCaption().equals(caption)).count() > 1) {
                                     headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
                                 } else {
                                     headerList.add(escapeField(caption));
@@ -327,10 +340,10 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                     recordList.add(DATE_FORMAT.format(resident.getDateOfBirth()));
                     recordList.add(resident.getNRICNumber());
 
-                    Map<String, String> fieldValueMap = resident.getFieldValueMap();
+                    Map<String, FieldValue> fieldValueMap = resident.getFieldValueMap();
                     for (String newFieldName : fieldNames) {
                         if (fieldValueMap.containsKey(newFieldName)) {
-                            String fieldValue = escapeField(fieldValueMap.get(newFieldName));
+                            String fieldValue = escapeField(fieldValueMap.get(newFieldName).getValue());
                             recordList.add(fieldValue);
                             if (fieldValue != null && !fieldValue.trim().isEmpty()) {
                                 columnsWithValuesCount.put(residentId, columnsWithValuesCount.get(residentId) + 1);
@@ -368,11 +381,11 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             return true; // Empty map is considered consistent
         }
 
-        Map<String, String> referenceFieldValues =
+        Map<String, FieldValue> referenceFieldValues =
                 residentsMap.values().iterator().next().getFieldValueMap();
 
         for (ResidentDetails resident : residentsMap.values()) {
-            Map<String, String> fieldValueMap = resident.getFieldValueMap();
+            Map<String, FieldValue> fieldValueMap = resident.getFieldValueMap();
             if (!fieldValueMap.keySet().equals(referenceFieldValues.keySet())) {
                 return false; // Inconsistent field names found
             }

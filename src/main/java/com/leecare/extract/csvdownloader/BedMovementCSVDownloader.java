@@ -26,24 +26,21 @@ public class BedMovementCSVDownloader extends CommonFormCSVDownloader {
             System.out.println("Data is not available for export. Please re-evaluate your parameters for downloading bedMovements");
             return;
         }
-        Map<Integer, ResidentRecordDetails> residentDetailsMap = new HashMap<>();
+        Map<Integer, ResidentRecordDetails> residentDetailsMap = new LinkedHashMap<>();
         for (Resident resident : residentsList) {
             List<BedMovement> bedMovements = dataExtractionService.extractBedMovements(params, resident.getId());
-            if (Objects.isNull(bedMovements) || bedMovements.isEmpty()) {
-                System.out.println("Data is not available for export. Please re-evaluate your parameters for downloading bedMovements");
-                return;
-            } else {
+            if (Objects.nonNull(bedMovements) || !bedMovements.isEmpty()) {
                 ResidentRecordDetails residentRecordDetails = new ResidentRecordDetails();
                 residentRecordDetails.setResidentID(resident.getId());
                 residentRecordDetails.setResidentName(resident.getFirstName().concat(" ").concat(resident.getLastName()));
                 residentRecordDetails.setDateOfBirth(DOB_FORMAT.parse(resident.getDateOfBirth()));
                 residentRecordDetails.setNRICNumber(resident.getNationalIDNumber());
-                Map<String, Map<Integer, FieldValueDetails>> fieldValueMap = new HashMap<>();
-                fieldValueMap.put("createdByUserID", new HashMap<>());
-                fieldValueMap.put("effectiveDateAndTime", new HashMap<>());
-                fieldValueMap.put("createdTimestamp", new HashMap<>());
-                fieldValueMap.put("bedMovementType", new HashMap<>());
-                fieldValueMap.put("leaveType", new HashMap<>());
+                Map<String, Map<Integer, FieldValueDetails>> fieldValueMap = new LinkedHashMap<>();
+                fieldValueMap.put("createdByUserID", new LinkedHashMap<>());
+                fieldValueMap.put("effectiveDateAndTime", new LinkedHashMap<>());
+                fieldValueMap.put("createdTimestamp", new LinkedHashMap<>());
+                fieldValueMap.put("bedMovementType", new LinkedHashMap<>());
+                fieldValueMap.put("leaveType", new LinkedHashMap<>());
 
                 for (BedMovement bedMovement : bedMovements) {
                     if (Objects.nonNull(bedMovement.getCreatedByUserID())) {
@@ -61,6 +58,10 @@ public class BedMovementCSVDownloader extends CommonFormCSVDownloader {
                     if (Objects.nonNull(bedMovement.getLeaveType())) {
                         fieldValueMap.get("leaveType")
                                 .put(bedMovement.getId(), new FieldValueDetails(bedMovement.getId(), bedMovement.getLeaveType(), getFormattedDate(bedMovement.getCreatedTimestamp()), null));
+                    }
+                    if (Objects.nonNull(bedMovement.getCreatedTimestamp())) {
+                        fieldValueMap.get("createdTimestamp")
+                                .put(bedMovement.getId(), new FieldValueDetails(bedMovement.getId(), null, getFormattedDate(bedMovement.getCreatedTimestamp()), getFormattedDate(bedMovement.getCreatedTimestamp())));
                     }
                     residentRecordDetails.setFieldValueMap(fieldValueMap);
                 }

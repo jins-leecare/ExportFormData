@@ -71,9 +71,14 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
                             record.add(taskRow.getResidentID());
                             record.add("");
                             record.add(taskRow.getResidentName());
-                            record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
-                            record.add(resident.getNationalIDNumber());
-                            residentIds.add(String.valueOf(resident.getId()));
+                            if (resident != null) {
+                                record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
+                                record.add(resident.getNationalIDNumber());
+                            } else {
+                                record.add("");
+                                record.add("");
+                            }
+                            residentIds.add(String.valueOf(taskRow.getResidentID()));
                         } else {
                             record.add("");
                             record.add("");
@@ -88,8 +93,13 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
                             record.add(String.valueOf(personNoteDetails.getPersonId()));
                             record.add("");
                             record.add(personNoteDetails.getResidentName());
-                            record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
-                            record.add(resident.getNationalIDNumber());
+                            if (resident != null) {
+                                record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
+                                record.add(resident.getNationalIDNumber());
+                            } else {
+                                record.add("");
+                                record.add("");
+                            }
                             residentIds.add(String.valueOf(personNoteDetails.getPersonId()));
                         } else {
                             record.add("");
@@ -108,6 +118,9 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
                             if (resident != null) {
                                 record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
                                 record.add(resident.getNationalIDNumber());
+                            } else {
+                                record.add("");
+                                record.add("");
                             }
                             residentIds.add(String.valueOf(adverseReactionDetails.getResidentId()));
                         } else {

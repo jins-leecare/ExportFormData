@@ -5,10 +5,7 @@ import com.leecare.extract.model.ResidentRecordDetails;
 import com.leecare.extract.service.DataExtractionService;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class PrescriptionsCSVDownloader extends CommonFormCSVDownloader {
 
@@ -29,10 +26,11 @@ public class PrescriptionsCSVDownloader extends CommonFormCSVDownloader {
                 "\"ToDate\":\"" + params.getToDate() + "\"" +
                 "}";
         Map<Integer, ResidentRecordDetails> residentDetailsMap = dataExtractionService.extractPrescriptionDetails(params, jsonBody);
+        TreeMap<Integer, ResidentRecordDetails> sortedResidentDetailsMap = new TreeMap<>(residentDetailsMap);
         super.downloadCSVForRange(params,
                 "PRESCRIPTIONS",
                 fieldCaptionMapping,
                 "Prescriptions",
-                residentDetailsMap);
+                sortedResidentDetailsMap);
     }
 }

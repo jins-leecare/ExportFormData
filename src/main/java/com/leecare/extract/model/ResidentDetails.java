@@ -8,7 +8,7 @@ package com.leecare.extract.model;
 
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,12 +24,19 @@ public class ResidentDetails implements Serializable {
     private String residentName;
     private Date dateOfBirth;
     private String NRICNumber;
-    private Map<String, String> fieldValueMap = new LinkedHashMap<>();;
+    private Map<String, FieldValue> fieldValueMap = new LinkedHashMap<>();
     /**
      * @return the residentID
      */
     public Integer getResidentID() {
         return residentID;}
+    /**
+     * Sets the residentID.
+     *
+     * @param aResidentID the residentID to set
+     */
+    public void setResidentID(Integer aResidentID) {
+        residentID = aResidentID;}
     /**
      * @return the facilityName
      */
@@ -66,30 +73,24 @@ public class ResidentDetails implements Serializable {
      */
     public void setDateOfBirth(Date aDateOfBirth) {
         dateOfBirth = aDateOfBirth;}
-    public String getNRICNumber() {
-        return NRICNumber;
-    }
-    public void setNRICNumber(String aNRICNumber) {
-        NRICNumber = aNRICNumber;
-    }
-    /**
-     * Sets the residentID.
-     *
-     * @param aResidentID the residentID to set
-     */
-    public void setResidentID(Integer aResidentID) {
-        residentID = aResidentID;}
-
     /**
      * @return
      */
-    public Map<String, String> getFieldValueMap() {
-        return fieldValueMap;
+    public String getNRICNumber() {
+        return NRICNumber;
     }
     /**
-     * @param aFieldValueMap
+     * @param aNRICNumber
      */
-    public void setFieldValueMap(Map<String, String> aFieldValueMap) {
-        fieldValueMap = aFieldValueMap;
+    public void setNRICNumber(String aNRICNumber) {
+        NRICNumber = aNRICNumber;
+    }
+
+    public Map<String, FieldValue> getFieldValueMap() {
+        return fieldValueMap;
+    }
+
+    public void setFieldValueMap(Map<String, FieldValue> fieldValueMap) {
+        this.fieldValueMap = fieldValueMap;
     }
 }

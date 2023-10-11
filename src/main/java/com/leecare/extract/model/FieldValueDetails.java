@@ -3,6 +3,7 @@ package com.leecare.extract.model;
 import java.io.Serializable;
 import java.util.Date;
 
+
 public class FieldValueDetails implements Serializable {
     private Integer recordID;
     private String fieldValue;
@@ -10,10 +11,14 @@ public class FieldValueDetails implements Serializable {
     private Integer batchID;
     private Integer schemaID;
     private Date valueDate;
-    private Double valueNumber;
+    private Double valueNumber = null;
     private String valueBit;
+    private String fieldName;
+    private String fieldCaption;
+
     public FieldValueDetails() {
     }
+
     /**
      * Constructs a FieldValueDetails.
      *
@@ -25,6 +30,8 @@ public class FieldValueDetails implements Serializable {
      * @param aValueDate
      * @param aValueNumber
      * @param aValueBit
+     * @param aFieldName
+     * @param aFieldCaption
      */
     public FieldValueDetails(
             Integer aRecordID,
@@ -34,7 +41,9 @@ public class FieldValueDetails implements Serializable {
             Integer aSchemaID,
             Date aValueDate,
             Double aValueNumber,
-            String aValueBit) {
+            String aValueBit,
+            String aFieldName,
+            String aFieldCaption) {
         super();
         recordID = aRecordID;
         fieldValue = aFieldValue;
@@ -44,6 +53,19 @@ public class FieldValueDetails implements Serializable {
         valueDate = aValueDate;
         valueNumber = aValueNumber;
         valueBit = aValueBit;
+        fieldName = aFieldName;
+        fieldCaption = aFieldCaption;
+    }
+    /**
+     * Constructs a FieldValueDetails.
+     *
+     * @param aRecordID
+     * @param aFieldValue
+     */
+    public FieldValueDetails(Integer aRecordID, String aFieldValue) {
+        super();
+        recordID = aRecordID;
+        fieldValue = aFieldValue;
     }
 
     public FieldValueDetails(Integer recordID, String fieldValue, Date dateCreated, Date valueDate) {
@@ -137,12 +159,40 @@ public class FieldValueDetails implements Serializable {
      */
     public void setValueNumber(Double aValueNumber) {
         valueNumber = aValueNumber;}
-
+    /**
+     * @return
+     */
     public String getValueBit() {
         return valueBit;
     }
-
-    public void setValueBit(String valueBit) {
-        this.valueBit = valueBit;
+    /**
+     * @param aValueBit
+     */
+    public void setValueBit(String aValueBit) {
+        valueBit = aValueBit;
     }
+    /**
+     * @return the fieldName
+     */
+    public String getFieldName() {
+        return fieldName;}
+    /**
+     * Sets the fieldName.
+     *
+     * @param aFieldName the fieldName to set
+     */
+    public void setFieldName(String aFieldName) {
+        fieldName = aFieldName;}
+    /**
+     * @return the fieldCaption
+     */
+    public String getFieldCaption() {
+        return fieldCaption;}
+    /**
+     * Sets the fieldCaption.
+     *
+     * @param aFieldCaption the fieldCaption to set
+     */
+    public void setFieldCaption(String aFieldCaption) {
+        fieldCaption = aFieldCaption;}
 }
