@@ -82,7 +82,8 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                         if (!fieldNames.contains(newFieldName)) {
                             FieldValueDetails fieldValueDetails = resident.getFieldValueMap()
                                     .get(newFieldName).values().stream().findFirst().get();
-                            if (fieldValueDetails.getFieldCaption().equals(fieldValueDetails.getFieldName())) {
+                            if (Objects.isNull(fieldValueDetails.getFieldCaption())
+                                    || fieldValueDetails.getFieldCaption().equals(fieldValueDetails.getFieldName())) {
                                 String caption = fieldNameCaptionMapping.getOrDefault(newFieldName, newFieldName);
                                 boolean captionHasValue = resident.getFieldValueMap().containsKey(newFieldName);
 
@@ -200,10 +201,18 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                 }
             }
         }
+
         if(fieldValues.containsKey("commencedate")) {
             String commenceDate = fieldValues.get("commencedate").getFieldValue();
             if (Objects.isNull(date) && Objects.nonNull(commenceDate)) {
                 date = DATE_FORMAT.parse(commenceDate);
+            }
+        }
+
+        if(fieldValues.containsKey("signOffTime")) {
+            String signOffTime = fieldValues.get("signOffTime").getFieldValue();
+            if (Objects.isNull(date) && Objects.nonNull(signOffTime)) {
+                date = DATE_FORMAT.parse(signOffTime);
             }
         }
         return date;

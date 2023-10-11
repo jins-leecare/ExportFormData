@@ -1,5 +1,9 @@
 package com.leecare.extract.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.leecare.extract.model.*;
 
 import javax.ws.rs.core.GenericType;
@@ -190,13 +194,19 @@ public class DataExtractionService {
         List<PersonNoteDetails> resultList = null;
         if (Objects.nonNull(response) && response.getStatus() == Response.Status.OK.getStatusCode()) {
             try {
-                resultList = response.readEntity(new GenericType<List<PersonNoteDetails>>() {});
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+                resultList = objectMapper.readValue(response.readEntity(String.class),
+                        new TypeReference<List<PersonNoteDetails>>() {});
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return resultList;
     }
+
 
     public List<AdverseReactionDetails> extractAdverseReactions(InputParameters parameters, String jsonBody) {
         String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId())

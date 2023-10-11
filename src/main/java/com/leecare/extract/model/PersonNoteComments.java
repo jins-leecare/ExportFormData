@@ -6,13 +6,14 @@
 
 package com.leecare.extract.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.util.Date;
 
 public class PersonNoteComments implements Serializable {
   private int id;
   private int noteId;
-  private Date createdOn;
   private String createdOnForReport;
   private String comment;
   private int createdUserId;
@@ -33,14 +34,6 @@ public class PersonNoteComments implements Serializable {
 
   public void setNoteId(int noteId) {
     this.noteId = noteId;
-  }
-
-  public Date getCreatedOn() {
-    return createdOn;
-  }
-
-  public void setCreatedOn(Date createdOn) {
-    this.createdOn = createdOn;
   }
 
   public void setCreatedOnForReport(String createdOnForReport) {
