@@ -12,6 +12,7 @@ public class ResidentRecordDetails implements Serializable {
     private String residentName;
     private Date dateOfBirth;
     private String NRICNumber;
+    private String loggedByUser;
     private Map<String, Map<Integer, FieldValueDetails>> fieldValueMap = new LinkedHashMap<>();
     /**
      * @return the residentID
@@ -59,6 +60,18 @@ public class ResidentRecordDetails implements Serializable {
     }
     public void setNRICNumber(String aNRICNumber) {
         NRICNumber = aNRICNumber;
+    }
+    /**
+     * @return
+     */
+    public String getLoggedByUser() {
+        return loggedByUser;
+    }
+    /**
+     * @param aLoggedByUser
+     */
+    public void setLoggedByUser(String aLoggedByUser) {
+        loggedByUser = aLoggedByUser;
     }
     /**
      * Sets the residentID.

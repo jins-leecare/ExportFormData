@@ -4,7 +4,6 @@ import com.leecare.extract.model.*;
 import com.leecare.extract.utils.StringUtils;
 import com.opencsv.CSVWriter;
 
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -13,13 +12,12 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class CommonCSVDownloader<T> implements CSVDownloader {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-    private static final SimpleDateFormat DATE_FORMAT1 = new SimpleDateFormat("yyyyMMdd");
-
-    public void downloadCSV(InputParameters params, String subFolder, String csvName, List<T> rowList, Map<Integer, Resident> residentMap) {
+    public void downloadCSV(InputParameters params, String subFolder, String csvName,
+                            List<T> rowList, Map<Integer, ResidentDetails> residentMap,
+                            Map<String, String> fieldMapping) {
         if (Objects.isNull(rowList) || rowList.isEmpty()) {
             System.out.println("Data is not available for export. Please re-evaluate your parameters for downloading " + csvName);
             return;
@@ -55,98 +53,102 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
                 header.add("dateOfBirth");
                 header.add("NRICNumber");
                 for (Field field : fieldList) {
-                    header.add(field.getName());
+                    if (fieldMapping != null) {
+                        if (fieldMapping.containsKey(field.getName())) {
+                            header.add(fieldMapping.get(field.getName()));
+                        }
+                    } else {
+                        header.add(field.getName());
+                    }
                 }
 
                 writer.writeNext(header.toArray(new String[0]));
 
-                // Iterate through the list and export each object
-                List<String> residentIds = new ArrayList<>();
                 for (T obj : rowList) {
                     List<Object> record = new ArrayList<>();
                     if (obj instanceof TasksRow) {
                         TasksRow taskRow = (TasksRow) obj;
-                        if (!residentIds.contains(taskRow.getResidentID())) {
-                            Resident resident = residentMap.get(Integer.parseInt(taskRow.getResidentID()));
-                            record.add(taskRow.getResidentID());
+
+                        ResidentDetails resident = residentMap.get(taskRow.getResidentID());
+                        record.add(String.valueOf(taskRow.getResidentID()));
+                        if (resident != null) {
+                            record.add(resident.getFacilityName());
+                        } else {
                             record.add("");
-                            record.add(taskRow.getResidentName());
-                            if (resident != null) {
-                                record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
-                                record.add(resident.getNationalIDNumber());
-                            } else {
-                                record.add("");
-                                record.add("");
-                            }
-                            residentIds.add(String.valueOf(taskRow.getResidentID()));
+                        }
+                        record.add(taskRow.getResidentName());
+                        if (resident != null) {
+                            record.add(DATE_FORMAT.format(resident.getDateOfBirth()));
+                            record.add(resident.getNRICNumber());
                         } else {
                             record.add("");
                             record.add("");
-                            record.add("");
-                            record.add("");
-                            record.add("");
                         }
-                    } else if(obj instanceof PersonNoteDetails) {
+                    } else if (obj instanceof PersonNoteDetails) {
                         PersonNoteDetails personNoteDetails = (PersonNoteDetails) obj;
-                        if (!residentIds.contains(String.valueOf(personNoteDetails.getPersonId()))) {
-                            Resident resident = residentMap.get(personNoteDetails.getPersonId());
-                            record.add(String.valueOf(personNoteDetails.getPersonId()));
-                            record.add("");
-                            record.add(personNoteDetails.getResidentName());
-                            if (resident != null) {
-                                record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
-                                record.add(resident.getNationalIDNumber());
-                            } else {
-                                record.add("");
-                                record.add("");
-                            }
-                            residentIds.add(String.valueOf(personNoteDetails.getPersonId()));
+                        ResidentDetails resident = residentMap.get(personNoteDetails.getPersonId());
+                        record.add(String.valueOf(personNoteDetails.getPersonId()));
+                        record.add(resident.getFacilityName());
+                        record.add(personNoteDetails.getResidentName());
+                        if (resident != null) {
+                            record.add(DATE_FORMAT.format(resident.getDateOfBirth()));
+                            record.add(resident.getNRICNumber());
                         } else {
-                            record.add("");
-                            record.add("");
-                            record.add("");
                             record.add("");
                             record.add("");
                         }
-                    } else if(obj instanceof AdverseReactionDetails) {
+                    } else if (obj instanceof AdverseReactionDetails) {
                         AdverseReactionDetails adverseReactionDetails = (AdverseReactionDetails) obj;
-                        if (!residentIds.contains(String.valueOf(adverseReactionDetails.getResidentId()))) {
-                            Resident resident = residentMap.get(adverseReactionDetails.getResidentId());
-                            record.add(String.valueOf(adverseReactionDetails.getResidentId()));
-                            record.add("");
-                            record.add(adverseReactionDetails.getResidentName());
-                            if (resident != null) {
-                                record.add(DATE_FORMAT1.parse(resident.getDateOfBirth()).toString());
-                                record.add(resident.getNationalIDNumber());
-                            } else {
-                                record.add("");
-                                record.add("");
-                            }
-                            residentIds.add(String.valueOf(adverseReactionDetails.getResidentId()));
+                        ResidentDetails resident = residentMap.get(adverseReactionDetails.getResidentId());
+                        record.add(String.valueOf(adverseReactionDetails.getResidentId()));
+                        record.add(resident.getFacilityName());
+                        record.add(adverseReactionDetails.getResidentName());
+                        if (resident != null) {
+                            record.add(DATE_FORMAT.format(resident.getDateOfBirth()));
+                            record.add(resident.getNRICNumber());
                         } else {
-                            record.add("");
-                            record.add("");
-                            record.add("");
                             record.add("");
                             record.add("");
                         }
                     }
                     for (Field field : fieldList) {
-                        field.setAccessible(true);
-                        try {
-                            Object value = field.get(obj);
-                            record.add(value != null ? value.toString() : ""); // Convert to String
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
+                        if (Objects.isNull(fieldMapping) || fieldMapping.containsKey(field.getName())) {
+                            field.setAccessible(true);
+                            try {
+                                Object value = field.get(obj);
+                                if (value != null && value instanceof List<?>) {
+                                    try {
+                                        List<PersonNoteComments> commentsList = (List<PersonNoteComments>) value;
+                                        StringBuilder combinedComments = new StringBuilder();
+                                        for (PersonNoteComments comment : commentsList) {
+                                            combinedComments.append("\"").append(comment.getComment()).append("\" (").append(comment.getCreatedOnForReport()).append("), ");
+                                        }
+                                        if (combinedComments.length() > 0) {
+                                            combinedComments.delete(combinedComments.length() - 2, combinedComments.length()); // Remove the trailing comma and space
+                                        }
+                                        record.add(combinedComments.toString());
+                                    } catch (Exception exception) {
+                                        exception.printStackTrace();
+                                    }
+                                } else {
+                                    record.add(value != null ? value.toString() : ""); // Convert to String
+                                }
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
 
                     writer.writeNext(record.toArray(new String[0]));
                 }
-            } catch (IOException | ParseException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void prepareSummaryCSV(Map<Integer, ?> residentDetailsMap, String formName, InputParameters params) {
+
     }
 
     private static String createFolder(String parentFolderPath, String subfolderName) {

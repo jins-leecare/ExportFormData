@@ -2,7 +2,10 @@ package com.leecare.extract.csvdownloader;
 
 import com.leecare.extract.model.*;
 import com.leecare.extract.utils.StringUtils;
+import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
+import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -30,13 +33,11 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
         System.out.println("CSV Generation started for " + formName + "at " + LocalDateTime.now());
         String filePath = createFolder(params.getConfigProperties().getFilePath(), "FORMS");
         String subFolderPath = createFolder(filePath, subFolder);
-        CsvSummary summary = new CsvSummary();
+
         generateCSV(
                 residentDetailsList,
                 subFolderPath + sanitizeFilename(fieldNameCaptionMapping.getOrDefault(formName, formName)) + ".csv",
-                fieldNameCaptionMapping, summary);
-        // Print summary to a text file
-        printSummaryToFile(summary, filePath, formName);
+                fieldNameCaptionMapping);
         System.out.println("CSV Generated successfully for " + formName + "at " + LocalDateTime.now());
         System.out.println();
     }
@@ -51,7 +52,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                     + formName );
             return;
         }
-        CsvSummary summary = new CsvSummary();
+
         System.out.println("CSV Generation(with range) started for " + formName + "at " + LocalDateTime.now());
         String filePath = createFolder(params.getConfigProperties().getFilePath(), "FORMS");
 
@@ -68,6 +69,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                 headerList.add("residentName");
                 headerList.add("dateOfBirth");
                 headerList.add("NRICNumber");
+                headerList.add("LoggedByUser");
                 if (formName.equalsIgnoreCase("prescriptions")) {
                     headerList.add("prescriptionDetailsID");
                 } else {
@@ -87,7 +89,8 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                                 String caption = fieldNameCaptionMapping.getOrDefault(newFieldName, newFieldName);
                                 boolean captionHasValue = resident.getFieldValueMap().containsKey(newFieldName);
 
-                                if (captionHasValue && fieldNameCaptionMapping.values().stream().filter(value -> value.equals(caption)).count() > 1) {
+                                if (captionHasValue && fieldNameCaptionMapping.values().stream()
+                                        .filter(value -> value != null && value.equals(caption)).count() > 1) {
                                     headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
                                 } else {
                                     headerList.add(escapeField(caption));
@@ -95,7 +98,8 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                             } else {
                                 String caption = fieldValueDetails.getFieldCaption();
                                 if (resident.getFieldValueMap().get(newFieldName).values()
-                                        .stream().filter(value -> value.getFieldCaption().equals(caption)).count() > 1) {
+                                        .stream().filter(value -> value.getFieldCaption() != null
+                                                && value.getFieldCaption().equals(caption)).count() > 1) {
                                     headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
                                 } else {
                                     headerList.add(escapeField(caption));
@@ -106,57 +110,37 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                     }
                 }
 
-                summary.setNumberOfColumns(headerList.size());
-                summary.setNumberOfResidents(residentDetailsMap.size()); // Set the number of residents
                 writer.writeNext(headerList.toArray(new String[0]));
-
-                Map<Integer, Integer> columnsWithValuesCount = new HashMap<>();
 
                 // Iterate through the residentDetailsMap
                 for (Map.Entry<Integer, ResidentRecordDetails> residentEntry : residentDetailsMap.entrySet()) {
                     Integer residentID = residentEntry.getKey();
                     ResidentRecordDetails residentDetails = residentEntry.getValue();
-                    columnsWithValuesCount.put(residentID, 0);
 
                     // Extract all distinct recordIDs for the current resident
                     TreeSet<Integer> recordIDs = extractAndSortRecordIDs(residentDetails);
-                    Boolean residentInserted = false;
                     for (Integer recordID : recordIDs) {
                         List<String> row = new ArrayList<>();
-                        if (!residentInserted) {
-                            row.add(residentID.toString());
-                            row.add(residentDetails.getFacilityName());
-                            row.add(residentDetails.getResidentName());
-                            row.add(DATE_FORMAT.format(residentDetails.getDateOfBirth()));
-                            row.add(residentDetails.getNRICNumber());
-                            columnsWithValuesCount.put(residentID, 5);
-                        } else {
-                            row.add("");
-                            row.add("");
-                            row.add("");
-                            row.add("");
-                            row.add("");
-                        }
-                        residentInserted = true;
+                        row.add(residentID.toString());
+                        row.add(residentDetails.getFacilityName());
+                        row.add(residentDetails.getResidentName());
+                        row.add(DATE_FORMAT.format(residentDetails.getDateOfBirth()));
+                        row.add(residentDetails.getNRICNumber());
+                        row.add(residentDetails.getLoggedByUser());
                         row.add(recordID.toString());
                         Map<String, FieldValueDetails> fieldValues = extractFieldValues(residentDetails, recordID, fieldNames);
                         row.add(DATE_FORMAT.format(getRecordDate(fieldValues)));
-                        columnsWithValuesCount.put(residentID, columnsWithValuesCount.get(residentID) + 2);
 
                         // Get the field values for the current resident and recordID
                         // Add field values to the row
                         for (String fieldName : fieldNames) {
                             String value = getFieldValue(fieldValues.get(fieldName));
                             row.add(escapeField(value));
-                            if (value != null && !value.isEmpty()) {
-                                columnsWithValuesCount.put(residentID, columnsWithValuesCount.get(residentID) + 1);
-                            }
                         }
 
                         writer.writeNext(row.toArray(new String[0]));
                     }
                 }
-                summary.setColumnsWithValuesCount(columnsWithValuesCount);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ParseException e) {
@@ -164,8 +148,6 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             }
         }
 
-        // Print summary to a text file
-        printSummaryToFile(summary, filePath, formName);
 
         System.out.println("CSV Generated(with range) successfully for " + formName + "at " + LocalDateTime.now());
         System.out.println();
@@ -186,6 +168,169 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
 
             saveBase64ToFile(decodedBytes, newFileName);
         }
+    }
+
+    public void prepareSummaryCSV(Map<Integer, ?> residentDetailsMap, String formName, InputParameters params) {
+
+        String filePath = createFolder(params.getConfigProperties().getFilePath(), "FORMS");
+        String subFolderPath = createFolder(filePath, "SUMMARY");
+        String csvFilePath = subFolderPath + "summary.csv";
+
+        File summaryCsvFile = new File(csvFilePath);
+
+        if (!summaryCsvFile.exists()) {
+            try {
+                summaryCsvFile.createNewFile();
+                // Initialize the file with header and write residents separately for the first time
+                writeHeaderAndResidentsToCSV(summaryCsvFile, residentDetailsMap);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        List<String[]> csvData = new ArrayList<>();
+        try (CSVReader csvReader = new CSVReader(new FileReader(summaryCsvFile))) {
+            csvData = csvReader.readAll();
+        } catch (CsvValidationException | IOException e) {
+            throw new RuntimeException(e);
+        } catch (CsvException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Create a map to track the columns for each form name
+        Map<String, Integer> columnMap = new LinkedHashMap<>();
+
+        if (!csvData.isEmpty()) {
+            // Read and store existing headers
+            String[] headers = csvData.get(0);
+            for (int i = 0; i < headers.length; i++) {
+                columnMap.put(headers[i], i);
+            }
+        }
+
+        if (!columnMap.containsKey(formName)) {
+            // If the formName is not in the headers, add it as a new column
+            columnMap.put(formName, columnMap.size());
+        }
+
+        csvData.set(0, columnMap.keySet().toArray(new String[0]));
+
+        for (Integer residentID : residentDetailsMap.keySet()) {
+            if (!containsResidentID(csvData, residentID)) {
+                // The ResidentID is not present in the existing data, so create a new row
+                String[] newRow = new String[columnMap.size()];
+
+                // Set the ResidentID in the first column
+                newRow[0] = residentID.toString();
+
+                // Append the new row to the CSV data
+                csvData.add(newRow);
+            }
+        }
+
+        if (Objects.nonNull(residentDetailsMap) && !residentDetailsMap.isEmpty()) {
+            // Update the existing data with the new values
+            for (int i = 1; i < csvData.size(); i++) {
+                String[] existingRow = csvData.get(i);
+
+                // Create a new row with one additional column for the formName
+                String[] newRow = new String[existingRow.length + 1];
+
+                // Copy the existing values to the new row
+                System.arraycopy(existingRow, 0, newRow, 0, existingRow.length);
+
+                Integer residentId = Integer.parseInt(newRow[columnMap.get("ResidentID")]);
+
+                Object value = residentDetailsMap.get(residentId);
+
+                // Update the values in the row based on your requirements
+                // For example, you can update the values under the "formName" column.
+                if (value != null) {
+                    if (value instanceof ResidentDetails) {
+                        // Handle ResidentDetails
+                        ResidentDetails details = (ResidentDetails) value;
+                        int totalFields = details.getFieldValueMap().size();
+                        int fieldsWithValues = (int) details.getFieldValueMap().values().stream().filter(fieldValue -> fieldValue.getValue() != null).count();
+                        //if (i == 1) {
+                        newRow[columnMap.get(formName)] = totalFields + " (" + fieldsWithValues + ")";
+                        //} else {
+                        // newRow[columnMap.get(formName)] = String.valueOf(fieldsWithValues);
+                        // }
+                    } else if (value instanceof ResidentRecordDetails) {
+                        // Handle ResidentRecordDetails
+                        ResidentRecordDetails recordDetails = (ResidentRecordDetails) value;
+                        int totalFields = recordDetails.getFieldValueMap().size();
+                        int fieldsWithValues = (int) recordDetails.getFieldValueMap().values()
+                                .stream()
+                                .flatMap(m -> m.values().stream())
+                                .filter(fieldValue -> checkNonNullValues(fieldValue))
+                                .count();
+                        // if (i == 1) {
+                        newRow[columnMap.get(formName)] = totalFields + " (" + fieldsWithValues + ")";
+                        // } else {
+                        //newRow[columnMap.get(formName)] = String.valueOf(fieldsWithValues);
+                        //}
+                    }
+                }
+                // Replace the existing row with the new row in the list
+                csvData.set(i, newRow);
+            }
+        }
+
+
+        // Write the modified data back to the CSV file
+        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(summaryCsvFile))) {
+            csvWriter.writeAll(csvData);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void writeHeaderAndResidentsToCSV(File file, Map<Integer, ?> residentDetailsMap) {
+        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
+            // Initialize the CSV file with headers
+            String[] headers = { "ResidentID" };
+            csvWriter.writeNext(headers);
+
+            // Write residents separately for the first time
+            for (Map.Entry<Integer, ?> entry : residentDetailsMap.entrySet()) {
+                Integer residentId = entry.getKey();
+                Object value = entry.getValue();
+                if (value != null) {
+                    String[] dataRow = new String[1];
+                    dataRow[0] = residentId.toString();
+                    csvWriter.writeNext(dataRow);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean containsResidentID(List<String[]> csvData, Integer residentID) {
+        for (int i = 1; i < csvData.size(); i++) {
+            String[] existingRow = csvData.get(i);
+            Integer existingResidentID = Integer.parseInt(existingRow[0]);
+            if (existingResidentID.equals(residentID)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkNonNullValues(FieldValueDetails fieldValue) {
+        Boolean nonNullValuePresent = false;
+        if (fieldValue.getFieldValue() != null) {
+            return true;
+        } else if(fieldValue.getValueDate() != null) {
+            return true;
+        } else if(fieldValue.getValueNumber() != null
+                && fieldValue.getValueNumber() != 0.0) {
+            return true;
+        } else if(fieldValue.getValueBit() != null) {
+            return true;
+        }
+        return nonNullValuePresent;
     }
 
     private static Date getRecordDate(Map<String, FieldValueDetails> fieldValues) throws ParseException {
@@ -257,8 +402,13 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             } else if (Objects.nonNull(fieldValueDetails.getValueDate())) {
                 return formatDate(fieldValueDetails.getValueDate());
             } else if (Objects.nonNull(fieldValueDetails.getValueBit())) {
-                return fieldValueDetails.getValueBit().equals("1") ? "true" : "";
-            } else if (Objects.nonNull(fieldValueDetails.getValueNumber()) && fieldValueDetails.getValueNumber() != 0.0) {
+                if (fieldValueDetails.getValueBit().equals("1")) {
+                    return "TRUE";
+                } else if (fieldValueDetails.getValueBit().equals("0")) {
+                    return "";
+                }
+                return "";
+            } else if (Objects.nonNull(fieldValueDetails.getValueNumber())) {
                 return String.valueOf(fieldValueDetails.getValueNumber());
             }
         }
@@ -285,7 +435,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
     private void generateCSV(
             Map<Integer, ResidentDetails> aResidentDetailsMap,
             String csvFilePath,
-            Map<String, String> aFieldNameCaptionMapping, CsvSummary summary) {
+            Map<String, String> aFieldNameCaptionMapping) {
         if (!aResidentDetailsMap.isEmpty()) {
             //Check if all residents have the same set of field names
             boolean consistentFieldNames = checkConsistentFieldNames(aResidentDetailsMap);
@@ -307,7 +457,8 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                             aResidentDetailsMap.values().iterator().next().getFieldValueMap();
                     for (String fieldName : fieldValueMap.keySet()) {
                         String caption = fieldValueMap.get(fieldName).getFieldCaption();
-                        if (fieldValueMap.values().stream().filter(value -> value.getFieldCaption().equals(caption)).count() > 1) {
+                        if (fieldValueMap.values().stream().filter(value -> value.getFieldCaption() != null
+                                && value.getFieldCaption().equals(caption)).count() > 1) {
                             headerList.add(escapeField(caption) + " (" + escapeField(fieldName) + ")");
                         } else {
                             headerList.add(escapeField(caption));
@@ -321,7 +472,8 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                             if (!fieldNames.contains(newFieldName)) {
                                 String caption = resident.getFieldValueMap().get(newFieldName).getFieldCaption();
                                 if (resident.getFieldValueMap().values().stream()
-                                        .filter(value -> value.getFieldCaption().equals(caption)).count() > 1) {
+                                        .filter(value -> value.getFieldCaption() != null
+                                                && value.getFieldCaption().equals(caption)).count() > 1) {
                                     headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
                                 } else {
                                     headerList.add(escapeField(caption));
@@ -332,15 +484,10 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                     }
                 }
 
-                summary.setNumberOfColumns(headerList.size());
-                summary.setNumberOfResidents(aResidentDetailsMap.size()); // Set the number of residents
                 writer.writeNext(headerList.toArray(new String[0]));
-
-                Map<Integer, Integer> columnsWithValuesCount = new HashMap<>();
 
                 // Write resident data
                 for (Integer residentId : aResidentDetailsMap.keySet()) {
-                    columnsWithValuesCount.put(residentId, 0);
                     ResidentDetails resident = aResidentDetailsMap.get(residentId);
                     List<String> recordList = new ArrayList<>();
                     recordList.add(residentId.toString());
@@ -354,14 +501,10 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                         if (fieldValueMap.containsKey(newFieldName)) {
                             String fieldValue = escapeField(fieldValueMap.get(newFieldName).getValue());
                             recordList.add(fieldValue);
-                            if (fieldValue != null && !fieldValue.trim().isEmpty()) {
-                                columnsWithValuesCount.put(residentId, columnsWithValuesCount.get(residentId) + 1);
-                            }
                         }
                     }
                     writer.writeNext(recordList.toArray(new String[0]));
                 }
-                summary.setColumnsWithValuesCount(columnsWithValuesCount);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -444,23 +587,6 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             return "png";
         }
         return "";
-    }
-
-    private void printSummaryToFile(CsvSummary summary, String filePath, String formName) {
-        String subFolderPath = createFolder(filePath, "SUMMARY");
-        String summaryFilePath = subFolderPath + formName + "_summary.txt"; // Specify the path to your text file
-        try (PrintWriter writer = new PrintWriter(summaryFilePath)) {
-            writer.println("CSV Summary:");
-            writer.println("Number of Columns: " + summary.getNumberOfColumns());
-            writer.println("Number of Residents: " + summary.getNumberOfResidents());
-            writer.println("Columns with Values Count:");
-
-            for (Map.Entry<Integer, Integer> entry : summary.getColumnsWithValuesCount().entrySet()) {
-                writer.println("ResidentID: " + entry.getKey() + ", Columns with Values: " + entry.getValue());
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     static class RecordDateComparator implements Comparator<Integer> {

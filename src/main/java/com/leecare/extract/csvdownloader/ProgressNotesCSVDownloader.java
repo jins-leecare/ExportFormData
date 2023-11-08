@@ -1,9 +1,7 @@
 package com.leecare.extract.csvdownloader;
 
-import com.leecare.extract.model.InputParameters;
-import com.leecare.extract.model.PersonNoteDetails;
-import com.leecare.extract.model.Resident;
-import com.leecare.extract.model.TasksRow;
+import com.leecare.extract.handler.CsvToUiFieldMappingLoader;
+import com.leecare.extract.model.*;
 import com.leecare.extract.service.DataExtractionService;
 
 import java.io.IOException;
@@ -32,12 +30,18 @@ public class ProgressNotesCSVDownloader extends CommonCSVDownloader<PersonNoteDe
             return;
         }
         Collections.sort(personNoteDetails, Comparator.comparingInt(PersonNoteDetails::getPersonId));
-        Map<Integer, Resident> residentMap = new HashMap<>();
+        Map<Integer, ResidentDetails> residentMap = new HashMap<>();
         personNoteDetails.forEach(personNote -> {
             if(!residentMap.containsKey(personNote.getPersonId())) {
                 residentMap.putIfAbsent(personNote.getPersonId(), dataExtractionService.extractResident(params, String.valueOf(personNote.getPersonId())));
             }
         });
-        super.downloadCSV(params, "PROGRESS-NOTES", "progressNotes", personNoteDetails, residentMap);
+        Map<String, String> fieldMapping = CsvToUiFieldMappingLoader.loadMapping("progressNotes");
+        super.downloadCSV(params, "PROGRESS-NOTES", "progressNotes", personNoteDetails, residentMap, fieldMapping);
+    }
+
+    @Override
+    public void prepareSummaryCSV(Map<Integer, ?> residentDetailsMap, String formName, InputParameters params) {
+
     }
 }

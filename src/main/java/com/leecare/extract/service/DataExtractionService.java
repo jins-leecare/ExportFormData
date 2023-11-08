@@ -111,15 +111,15 @@ public class DataExtractionService {
         return residentDetails;
     }
 
-    public Resident extractResident(InputParameters parameters, String residentID) {
-        String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + parameters.getFacilityId() + "/residents/"
-                + residentID + "?"
-                + "fields=%5B%22ltcPersonID%22,%22firstName%22,%22lastName%22,%22dateOfBirth%22,%22nationalIDNumber%22%5D";
+    public ResidentDetails extractResident(InputParameters parameters, String residentID) {
+        String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + parameters.getFacilityId()
+                + "/dataextract/findResidentDetails/"
+                + residentID;
         Response response = restController.retrieveData(parameters, url);
-        Resident residentDetail = null;
+        ResidentDetails residentDetail = null;
         if (Objects.nonNull(response) && response.getStatus() == Response.Status.OK.getStatusCode()) {
             try {
-                residentDetail = response.readEntity(new GenericType<Resident>() {});
+                residentDetail = response.readEntity(new GenericType<ResidentDetails>() {});
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -41,6 +41,7 @@ public class GridFormFormCSVDownloader extends CommonFormCSVDownloader {
                 "\"ToDate\":\"" + params.getToDate() + "\"" +
                 "}";
         Map<Integer, ResidentRecordDetails> residentDetailsMap = dataExtractionService.extractGridFormData(params, jsonBody);
+        super.prepareSummaryCSV(residentDetailsMap, form, params);
         super.downloadCSVForRange(
                 params, "GRID-FORMS",
                 fieldCaptionMapping,

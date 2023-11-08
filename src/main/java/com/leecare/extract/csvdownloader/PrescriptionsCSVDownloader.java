@@ -27,6 +27,7 @@ public class PrescriptionsCSVDownloader extends CommonFormCSVDownloader {
                 "}";
         Map<Integer, ResidentRecordDetails> residentDetailsMap = dataExtractionService.extractPrescriptionDetails(params, jsonBody);
         TreeMap<Integer, ResidentRecordDetails> sortedResidentDetailsMap = new TreeMap<>(residentDetailsMap);
+        super.prepareSummaryCSV(residentDetailsMap, "prescriptions", params);
         super.downloadCSVForRange(params,
                 "PRESCRIPTIONS",
                 fieldCaptionMapping,

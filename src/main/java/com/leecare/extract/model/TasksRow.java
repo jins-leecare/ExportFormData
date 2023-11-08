@@ -12,7 +12,7 @@ public class TasksRow implements Serializable {
     private String createdBy;
     private String performedBy;
     private String residentName;
-    private String residentID;
+    private Integer residentID;
     private String status;
     private String location;
     private String comments;
@@ -112,11 +112,11 @@ public class TasksRow implements Serializable {
         residentName = aResidentName;
     }
 
-    public String getResidentID() {
+    public Integer getResidentID() {
         return residentID;
     }
 
-    public void setResidentID(String residentID) {
+    public void setResidentID(Integer residentID) {
         this.residentID = residentID;
     }
 

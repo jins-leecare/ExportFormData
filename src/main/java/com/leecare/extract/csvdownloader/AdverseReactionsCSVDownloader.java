@@ -1,9 +1,10 @@
 package com.leecare.extract.csvdownloader;
 
+import com.leecare.extract.handler.CsvToUiFieldMappingLoader;
 import com.leecare.extract.model.AdverseReactionDetails;
 import com.leecare.extract.model.InputParameters;
-import com.leecare.extract.model.PersonNoteDetails;
 import com.leecare.extract.model.Resident;
+import com.leecare.extract.model.ResidentDetails;
 import com.leecare.extract.service.DataExtractionService;
 
 import java.io.IOException;
@@ -27,12 +28,13 @@ public class AdverseReactionsCSVDownloader extends CommonCSVDownloader<AdverseRe
             return;
         }
         Collections.sort(adverseReactionDetails, Comparator.comparingInt(AdverseReactionDetails::getResidentId));
-        Map<Integer, Resident> residentMap = new HashMap<>();
+        Map<Integer, ResidentDetails> residentMap = new HashMap<>();
         adverseReactionDetails.forEach(adverseReaction -> {
             if(!residentMap.containsKey(adverseReaction.getResidentId())) {
                 residentMap.putIfAbsent(adverseReaction.getResidentId(), dataExtractionService.extractResident(params, String.valueOf(adverseReaction.getResidentId())));
             }
         });
-        super.downloadCSV(params, "ADVERSE-REACTIONS", "adverseReactions", adverseReactionDetails, residentMap);
+        Map<String, String> fieldMapping = CsvToUiFieldMappingLoader.loadMapping("adverseReactions");
+        super.downloadCSV(params, "ADVERSE-REACTIONS", "adverseReactions", adverseReactionDetails, residentMap, fieldMapping);
     }
 }

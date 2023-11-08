@@ -6,6 +6,7 @@ import com.leecare.extract.service.DataExtractionService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class AttachmentsDownloader extends CommonFormCSVDownloader {
@@ -24,5 +25,10 @@ public class AttachmentsDownloader extends CommonFormCSVDownloader {
             return;
         }
         saveFileAttachmentsToFolder(params, "ATTACHMENTS", fileAttachments);
+    }
+
+    @Override
+    public void prepareSummaryCSV(Map<Integer, ?> residentDetailsMap, String formNam, InputParameters params) {
+
     }
 }
