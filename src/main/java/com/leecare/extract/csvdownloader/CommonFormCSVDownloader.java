@@ -177,112 +177,116 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
         String csvFilePath = subFolderPath + "summary.csv";
 
         File summaryCsvFile = new File(csvFilePath);
-
-        if (!summaryCsvFile.exists()) {
-            try {
-                summaryCsvFile.createNewFile();
-                // Initialize the file with header and write residents separately for the first time
-                writeHeaderAndResidentsToCSV(summaryCsvFile, residentDetailsMap);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        List<String[]> csvData = new ArrayList<>();
-        try (CSVReader csvReader = new CSVReader(new FileReader(summaryCsvFile))) {
-            csvData = csvReader.readAll();
-        } catch (CsvValidationException | IOException e) {
-            throw new RuntimeException(e);
-        } catch (CsvException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Create a map to track the columns for each form name
-        Map<String, Integer> columnMap = new LinkedHashMap<>();
-
-        if (!csvData.isEmpty()) {
-            // Read and store existing headers
-            String[] headers = csvData.get(0);
-            for (int i = 0; i < headers.length; i++) {
-                columnMap.put(headers[i], i);
-            }
-        }
-
-        if (!columnMap.containsKey(formName)) {
-            // If the formName is not in the headers, add it as a new column
-            columnMap.put(formName, columnMap.size());
-        }
-
-        csvData.set(0, columnMap.keySet().toArray(new String[0]));
-
-        for (Integer residentID : residentDetailsMap.keySet()) {
-            if (!containsResidentID(csvData, residentID)) {
-                // The ResidentID is not present in the existing data, so create a new row
-                String[] newRow = new String[columnMap.size()];
-
-                // Set the ResidentID in the first column
-                newRow[0] = residentID.toString();
-
-                // Append the new row to the CSV data
-                csvData.add(newRow);
-            }
-        }
-
-        if (Objects.nonNull(residentDetailsMap) && !residentDetailsMap.isEmpty()) {
-            // Update the existing data with the new values
-            for (int i = 1; i < csvData.size(); i++) {
-                String[] existingRow = csvData.get(i);
-
-                // Create a new row with one additional column for the formName
-                String[] newRow = new String[existingRow.length + 1];
-
-                // Copy the existing values to the new row
-                System.arraycopy(existingRow, 0, newRow, 0, existingRow.length);
-
-                Integer residentId = Integer.parseInt(newRow[columnMap.get("ResidentID")]);
-
-                Object value = residentDetailsMap.get(residentId);
-
-                // Update the values in the row based on your requirements
-                // For example, you can update the values under the "formName" column.
-                if (value != null) {
-                    if (value instanceof ResidentDetails) {
-                        // Handle ResidentDetails
-                        ResidentDetails details = (ResidentDetails) value;
-                        int totalFields = details.getFieldValueMap().size();
-                        int fieldsWithValues = (int) details.getFieldValueMap().values().stream().filter(fieldValue -> fieldValue.getValue() != null).count();
-                        //if (i == 1) {
-                        newRow[columnMap.get(formName)] = totalFields + " (" + fieldsWithValues + ")";
-                        //} else {
-                        // newRow[columnMap.get(formName)] = String.valueOf(fieldsWithValues);
-                        // }
-                    } else if (value instanceof ResidentRecordDetails) {
-                        // Handle ResidentRecordDetails
-                        ResidentRecordDetails recordDetails = (ResidentRecordDetails) value;
-                        int totalFields = recordDetails.getFieldValueMap().size();
-                        int fieldsWithValues = (int) recordDetails.getFieldValueMap().values()
-                                .stream()
-                                .flatMap(m -> m.values().stream())
-                                .filter(fieldValue -> checkNonNullValues(fieldValue))
-                                .count();
-                        // if (i == 1) {
-                        newRow[columnMap.get(formName)] = totalFields + " (" + fieldsWithValues + ")";
-                        // } else {
-                        //newRow[columnMap.get(formName)] = String.valueOf(fieldsWithValues);
-                        //}
+        try {
+            if (Objects.nonNull(residentDetailsMap) && !residentDetailsMap.isEmpty()) {
+                if (!summaryCsvFile.exists()) {
+                    try {
+                        summaryCsvFile.createNewFile();
+                        // Initialize the file with header and write residents separately for the first time
+                        writeHeaderAndResidentsToCSV(summaryCsvFile, residentDetailsMap);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
                     }
                 }
-                // Replace the existing row with the new row in the list
-                csvData.set(i, newRow);
+
+                List<String[]> csvData = new ArrayList<>();
+                try (CSVReader csvReader = new CSVReader(new FileReader(summaryCsvFile))) {
+                    csvData = csvReader.readAll();
+                } catch (CsvValidationException | IOException e) {
+                    throw new RuntimeException(e);
+                } catch (CsvException e) {
+                    throw new RuntimeException(e);
+                }
+
+                // Create a map to track the columns for each form name
+                Map<String, Integer> columnMap = new LinkedHashMap<>();
+
+                if (!csvData.isEmpty()) {
+                    // Read and store existing headers
+                    String[] headers = csvData.get(0);
+                    for (int i = 0; i < headers.length; i++) {
+                        columnMap.put(headers[i], i);
+                    }
+                }
+
+                if (!columnMap.containsKey(formName)) {
+                    // If the formName is not in the headers, add it as a new column
+                    columnMap.put(formName, columnMap.size());
+                }
+
+                csvData.set(0, columnMap.keySet().toArray(new String[0]));
+
+                for (Integer residentID : residentDetailsMap.keySet()) {
+                    if (!containsResidentID(csvData, residentID)) {
+                        // The ResidentID is not present in the existing data, so create a new row
+                        String[] newRow = new String[columnMap.size()];
+
+                        // Set the ResidentID in the first column
+                        newRow[0] = residentID.toString();
+
+                        // Append the new row to the CSV data
+                        csvData.add(newRow);
+                    }
+                }
+
+
+                // Update the existing data with the new values
+                for (int i = 1; i < csvData.size(); i++) {
+                    String[] existingRow = csvData.get(i);
+
+                    // Create a new row with one additional column for the formName
+                    String[] newRow = new String[existingRow.length + 1];
+
+                    // Copy the existing values to the new row
+                    System.arraycopy(existingRow, 0, newRow, 0, existingRow.length);
+
+                    Integer residentId = Integer.parseInt(newRow[columnMap.get("ResidentID")]);
+
+                    Object value = residentDetailsMap.get(residentId);
+
+                    // Update the values in the row based on your requirements
+                    // For example, you can update the values under the "formName" column.
+                    if (value != null) {
+                        if (value instanceof ResidentDetails) {
+                            // Handle ResidentDetails
+                            ResidentDetails details = (ResidentDetails) value;
+                            int totalFields = details.getFieldValueMap().size();
+                            int fieldsWithValues = (int) details.getFieldValueMap().values().stream().filter(fieldValue -> fieldValue.getValue() != null).count();
+                            //if (i == 1) {
+                            newRow[columnMap.get(formName)] = totalFields + " (" + fieldsWithValues + ")";
+                            //} else {
+                            // newRow[columnMap.get(formName)] = String.valueOf(fieldsWithValues);
+                            // }
+                        } else if (value instanceof ResidentRecordDetails) {
+                            // Handle ResidentRecordDetails
+                            ResidentRecordDetails recordDetails = (ResidentRecordDetails) value;
+                            int totalFields = recordDetails.getFieldValueMap().size();
+                            int fieldsWithValues = (int) recordDetails.getFieldValueMap().values()
+                                    .stream()
+                                    .flatMap(m -> m.values().stream())
+                                    .filter(fieldValue -> checkNonNullValues(fieldValue))
+                                    .count();
+                            // if (i == 1) {
+                            newRow[columnMap.get(formName)] = totalFields + " (" + fieldsWithValues + ")";
+                            // } else {
+                            //newRow[columnMap.get(formName)] = String.valueOf(fieldsWithValues);
+                            //}
+                        }
+                    }
+                    // Replace the existing row with the new row in the list
+                    csvData.set(i, newRow);
+                }
+
+
+                // Write the modified data back to the CSV file
+                try (CSVWriter csvWriter = new CSVWriter(new FileWriter(summaryCsvFile))) {
+                    csvWriter.writeAll(csvData);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
-
-
-        // Write the modified data back to the CSV file
-        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(summaryCsvFile))) {
-            csvWriter.writeAll(csvData);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 

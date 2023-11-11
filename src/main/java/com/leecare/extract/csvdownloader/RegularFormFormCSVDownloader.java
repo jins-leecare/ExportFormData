@@ -20,9 +20,13 @@ public class RegularFormFormCSVDownloader extends CommonFormCSVDownloader {
         Map<String, String> fieldCaptionMapping = dataExtractionService.extractFieldCaptionMapping(params);
         if (Objects.isNull(params.getFormName())) {
             List<String> formNames = dataExtractionService.extractFormNames(params);
-            formNames.forEach(form -> {
-                retrieveDataAndDownloadCSV(params, fieldCaptionMapping, form);
-            });
+            if (Objects.nonNull(formNames)) {
+                formNames.forEach(form -> {
+                    retrieveDataAndDownloadCSV(params, fieldCaptionMapping, form);
+                });
+            } else {
+                System.out.println("Please check your application is working correctly");
+            }
         } else {
             retrieveDataAndDownloadCSV(params, fieldCaptionMapping, params.getFormName());
         }
