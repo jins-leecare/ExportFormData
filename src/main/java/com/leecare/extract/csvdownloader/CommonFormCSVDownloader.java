@@ -90,7 +90,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                                 boolean captionHasValue = resident.getFieldValueMap().containsKey(newFieldName);
 
                                 if (captionHasValue && fieldNameCaptionMapping.values().stream()
-                                        .filter(value -> value != null && value.equals(caption)).count() > 1) {
+                                        .filter(value -> value != null && value.equalsIgnoreCase(caption)).count() > 1) {
                                     headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
                                 } else {
                                     headerList.add(escapeField(caption));
@@ -99,7 +99,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                                 String caption = fieldValueDetails.getFieldCaption();
                                 if (resident.getFieldValueMap().get(newFieldName).values()
                                         .stream().filter(value -> value.getFieldCaption() != null
-                                                && value.getFieldCaption().equals(caption)).count() > 1) {
+                                                && value.getFieldCaption().equalsIgnoreCase(caption)).count() > 1) {
                                     headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
                                 } else {
                                     headerList.add(escapeField(caption));
@@ -462,7 +462,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                     for (String fieldName : fieldValueMap.keySet()) {
                         String caption = fieldValueMap.get(fieldName).getFieldCaption();
                         if (fieldValueMap.values().stream().filter(value -> value.getFieldCaption() != null
-                                && value.getFieldCaption().equals(caption)).count() > 1) {
+                                && value.getFieldCaption().equalsIgnoreCase(caption)).count() > 1) {
                             headerList.add(escapeField(caption) + " (" + escapeField(fieldName) + ")");
                         } else {
                             headerList.add(escapeField(caption));
@@ -477,7 +477,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                                 String caption = resident.getFieldValueMap().get(newFieldName).getFieldCaption();
                                 if (resident.getFieldValueMap().values().stream()
                                         .filter(value -> value.getFieldCaption() != null
-                                                && value.getFieldCaption().equals(caption)).count() > 1) {
+                                                && value.getFieldCaption().equalsIgnoreCase(caption)).count() > 1) {
                                     headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
                                 } else {
                                     headerList.add(escapeField(caption));

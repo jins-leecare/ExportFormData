@@ -19,8 +19,8 @@
         "renamedFieldName": "Manifestation"
       },
       {
-        "fieldName": "comment",
-        "renamedFieldName": "Comment"
+        "fieldName": "createdUserName",
+        "renamedFieldName": "createdUserName"
       },
       {
         "fieldName": "createdOnForReport",
@@ -78,315 +78,315 @@
     "fields": [
       {
         "fieldName": "fld_Comp_CompreMA_Gastro_AssDet_BMI",
-        "renamedFieldName": "BMI (kg/m²)"
+        "renamedFieldName": "(Weight and Vitals) BMI (kg/m²)"
       },
       {
         "fieldName": "fld_Comp_CompreMA_Gastro_AssDet_BMI_Max",
-        "renamedFieldName": "BMI Max"
+        "renamedFieldName": "(Weight and Vitals) BMI Max"
       },
       {
         "fieldName": "fld_Comp_CompreMA_Gastro_AssDet_BMI_Min",
-        "renamedFieldName": "BMI Min"
+        "renamedFieldName": "(Weight and Vitals) BMI Min"
       },
       {
         "fieldName": "fld_Comp_CompreMA_Gastro_AssDet_BMI_Notes",
-        "renamedFieldName": "BMI Notes"
+        "renamedFieldName": "(Weight and Vitals) BMI Notes"
       },
       {
         "fieldName": "fld_Cont_Urinalysis",
-        "renamedFieldName": "Urinalysis Results"
+        "renamedFieldName": "(Urinalysis) Urinalysis Results"
       },
       {
         "fieldName": "fld_Funct_Height",
-        "renamedFieldName": "Height (cm)"
+        "renamedFieldName": "(Weight and Vitals) Height (cm)"
       },
       {
         "fieldName": "fld_neuro_obs_arm_reac_left",
-        "renamedFieldName": "Left Arm Reaction"
+        "renamedFieldName": "(Neurological Observations) Left Arm Reaction"
       },
       {
         "fieldName": "fld_neuro_obs_arm_reac_right",
-        "renamedFieldName": "Right Arm Reaction"
+        "renamedFieldName": "(Neurological Observations) Right Arm Reaction"
       },
       {
         "fieldName": "fld_neuro_obs_eye_resp",
-        "renamedFieldName": "Eye Response"
+        "renamedFieldName": "(Neurological Observations) Eye Response"
       },
       {
         "fieldName": "fld_neuro_obs_leg_reac_left",
-        "renamedFieldName": "Left Leg Reaction"
+        "renamedFieldName": "(Neurological Observations) Left Leg Reaction"
       },
       {
         "fieldName": "fld_neuro_obs_leg_reac_right",
-        "renamedFieldName": "Right Leg Reaction"
+        "renamedFieldName": "(Neurological Observations) Right Leg Reaction"
       },
       {
         "fieldName": "fld_neuro_obs_motor_resp",
-        "renamedFieldName": "Motor Response"
+        "renamedFieldName": "(Neurological Observations) Motor Response"
       },
       {
         "fieldName": "fld_neuro_obs_note",
-        "renamedFieldName": "Neuro Observation Notes"
+        "renamedFieldName": "(Neurological Observations) Neuro Observation Notes"
       },
       {
         "fieldName": "fld_neuro_obs_pupil_reac_left",
-        "renamedFieldName": "Left Pupil Reaction"
+        "renamedFieldName": "(Neurological Observations) Left Pupil Reaction"
       },
       {
         "fieldName": "fld_neuro_obs_pupil_reaction_right",
-        "renamedFieldName": "Right Pupil Reaction"
+        "renamedFieldName": "(Neurological Observations) Right Pupil Reaction"
       },
       {
         "fieldName": "fld_neuro_obs_pupil_size_left",
-        "renamedFieldName": "Left Pupil Size (mm)"
+        "renamedFieldName": "(Neurological Observations) Left Pupil Size (mm)"
       },
       {
         "fieldName": "fld_neuro_obs_pupil_size_right",
-        "renamedFieldName": "Right Pupil Size (mm)"
+        "renamedFieldName": "(Neurological Observations) Right Pupil Size (mm)"
       },
       {
         "fieldName": "fld_neuro_obs_Time",
-        "renamedFieldName": "Neuro Observation Time"
+        "renamedFieldName": "(Neurological Observations) Neuro Observation Time"
       },
       {
         "fieldName": "fld_neuro_obs_verb_resp",
-        "renamedFieldName": "Verbal Response"
+        "renamedFieldName": "(Neurological Observations) Verbal Response"
       },
       {
         "fieldName": "fld_Nutrit_Vital_Ulna length",
-        "renamedFieldName": "Ulna Length (cm)"
+        "renamedFieldName": "(Weight & Vitals) Ulna Length (cm)"
       },
       {
         "fieldName": "fld_Urinalysis_Bilirubin",
-        "renamedFieldName": "Bilirubin"
+        "renamedFieldName": "(Urinalysis) Bilirubin"
       },
       {
         "fieldName": "fld_Urinalysis_Blood",
-        "renamedFieldName": "Blood"
+        "renamedFieldName": "(Urinalysis) Blood"
       },
       {
         "fieldName": "fld_Urinalysis_Glucose",
-        "renamedFieldName": "Glucose"
+        "renamedFieldName": "(Urinalysis) Glucose"
       },
       {
         "fieldName": "fld_Urinalysis_Glucose_Max",
-        "renamedFieldName": "Glucose Max"
+        "renamedFieldName": "(Urinalysis) Glucose Max"
       },
       {
         "fieldName": "fld_Urinalysis_Glucose_Min",
-        "renamedFieldName": "Glucose Min"
+        "renamedFieldName": "(Urinalysis) Glucose Min"
       },
       {
         "fieldName": "fld_Urinalysis_Glucose_Notes",
-        "renamedFieldName": "Glucose Notes"
+        "renamedFieldName": "(Urinalysis) Glucose Notes"
       },
       {
         "fieldName": "fld_Urinalysis_Ketones",
-        "renamedFieldName": "Ketones"
+        "renamedFieldName": "(Urinalysis) Ketones"
       },
       {
         "fieldName": "fld_Urinalysis_Ketones_Max",
-        "renamedFieldName": "Ketones Max"
+        "renamedFieldName": "(Urinalysis) Ketones Max"
       },
       {
         "fieldName": "fld_Urinalysis_Ketones_Min",
-        "renamedFieldName": "Ketones Min"
+        "renamedFieldName": "(Urinalysis) Ketones Min"
       },
       {
         "fieldName": "fld_Urinalysis_Ketones_Notes",
-        "renamedFieldName": "Ketones Notes"
+        "renamedFieldName": "(Urinalysis) Ketones Notes"
       },
       {
         "fieldName": "fld_Urinalysis_Leucocytes",
-        "renamedFieldName": "Leucocytes"
+        "renamedFieldName": "(Urinalysis) Leucocytes"
       },
       {
         "fieldName": "fld_Urinalysis_Nitrite",
-        "renamedFieldName": "Nitrite"
+        "renamedFieldName": "(Urinalysis) Nitrite"
       },
       {
         "fieldName": "fld_Urinalysis_Ph",
-        "renamedFieldName": "pH"
+        "renamedFieldName": "(Urinalysis) pH"
       },
       {
         "fieldName": "fld_Urinalysis_Ph_Max",
-        "renamedFieldName": "pH Max"
+        "renamedFieldName": "(Urinalysis) pH Max"
       },
       {
         "fieldName": "fld_Urinalysis_Ph_Min",
-        "renamedFieldName": "pH Min"
+        "renamedFieldName": "(Urinalysis) pH Min"
       },
       {
         "fieldName": "fld_Urinalysis_Ph_Notes",
-        "renamedFieldName": "pH Notes"
+        "renamedFieldName": "(Urinalysis) pH Notes"
       },
       {
         "fieldName": "fld_Urinalysis_Protein",
-        "renamedFieldName": "Protein"
+        "renamedFieldName": "(Urinalysis) Protein"
       },
       {
         "fieldName": "fld_Urinalysis_SG",
-        "renamedFieldName": "Specific Gravity"
+        "renamedFieldName": "(Urinalysis) Specific Gravity"
       },
       {
         "fieldName": "fld_Urinalysis_SG_Max",
-        "renamedFieldName": "Specific Gravity Max"
+        "renamedFieldName": "(Urinalysis) Specific Gravity Max"
       },
       {
         "fieldName": "fld_Urinalysis_SG_Min",
-        "renamedFieldName": "Specific Gravity Min"
+        "renamedFieldName": "(Urinalysis) Specific Gravity Min"
       },
       {
         "fieldName": "fld_Urinalysis_SG_Notes",
-        "renamedFieldName": "Specific Gravity Notes"
+        "renamedFieldName": "(Urinalysis) Specific Gravity Notes"
       },
       {
         "fieldName": "fld_Urinalysis_Urobilinogen",
-        "renamedFieldName": "Urobilinogen"
+        "renamedFieldName": "(Urinalysis) Urobilinogen"
       },
       {
         "fieldName": "fld_Vitals_BP",
-        "renamedFieldName": "BP systolic (mmHg)"
+        "renamedFieldName": "(Weight & Vitals) BP systolic (mmHg)"
       },
       {
         "fieldName": "fld_Vitals_BP_Max",
-        "renamedFieldName": "Systolic BP Max"
+        "renamedFieldName": "(Weight & Vitals) Systolic BP Max"
       },
       {
         "fieldName": "fld_Vitals_BP_Min",
-        "renamedFieldName": "Systolic BP Min"
+        "renamedFieldName": "(Weight & Vitals) Systolic BP Min"
       },
       {
         "fieldName": "fld_Vitals_BP_Notes",
-        "renamedFieldName": "Systolic BP Notes"
+        "renamedFieldName": "(Weight & Vitals) Systolic BP Notes"
       },
       {
         "fieldName": "fld_Vitals_BP2",
-        "renamedFieldName": "BP diastolic (mmHg)"
+        "renamedFieldName": "(Weight & Vitals) BP diastolic (mmHg)"
       },
       {
         "fieldName": "fld_Vitals_BP2_Max",
-        "renamedFieldName": "Diastolic BP Max"
+        "renamedFieldName": "(Weight & Vitals) Diastolic BP Max"
       },
       {
         "fieldName": "fld_Vitals_BP2_Min",
-        "renamedFieldName": "Diastolic BP Min"
+        "renamedFieldName": "(Weight & Vitals) Diastolic BP Min"
       },
       {
         "fieldName": "fld_Vitals_BP2_Notes",
-        "renamedFieldName": "Diastolic BP Notes"
+        "renamedFieldName": "(Weight & Vitals) Diastolic BP Notes"
       },
       {
         "fieldName": "fld_Vitals_BSL",
-        "renamedFieldName": "BGL (mmol/L)"
+        "renamedFieldName": "(Weight & Vitals) BGL (mmol/L)"
       },
       {
         "fieldName": "fld_Vitals_BSL_Max",
-        "renamedFieldName": "BGL Max"
+        "renamedFieldName": "(Weight & Vitals) BGL Max"
       },
       {
         "fieldName": "fld_Vitals_BSL_Min",
-        "renamedFieldName": "BGL Min"
+        "renamedFieldName": "(Weight & Vitals) BGL Min"
       },
       {
         "fieldName": "fld_Vitals_BSL_Notes",
-        "renamedFieldName": "BGL Notes"
+        "renamedFieldName": "(Weight & Vitals) BGL Notes"
       },
       {
         "fieldName": "fld_Vitals_Neuro_Obs",
-        "renamedFieldName": "Neuro Observations"
+        "renamedFieldName": "(Neurological Observations) Neuro Observations"
       },
       {
         "fieldName": "fld_Vitals_Note",
-        "renamedFieldName": "Vitals Notes"
+        "renamedFieldName": "(Weight & Vitals) Vitals Notes"
       },
       {
         "fieldName": "fld_Vitals_Pulse",
-        "renamedFieldName": "Pulse (bpm)"
+        "renamedFieldName": "(Weight & Vitals) Pulse (bpm)"
       },
       {
         "fieldName": "fld_Vitals_Pulse_Max",
-        "renamedFieldName": "Pulse Max"
+        "renamedFieldName": "(Weight & Vitals) Pulse Max"
       },
       {
         "fieldName": "fld_Vitals_Pulse_Min",
-        "renamedFieldName": "Pulse Min"
+        "renamedFieldName": "(Weight & Vitals) Pulse Min"
       },
       {
         "fieldName": "fld_Vitals_Pulse_Notes",
-        "renamedFieldName": "Pulse Notes"
+        "renamedFieldName": "(Weight & Vitals) Pulse Notes"
       },
       {
         "fieldName": "fld_Vitals_Reason",
-        "renamedFieldName": "Wt. Loss Reason"
+        "renamedFieldName": "(Weight & Vitals) Wt. Loss Reason"
       },
       {
         "fieldName": "fld_Vitals_Resps",
-        "renamedFieldName": "Resps. (/min)"
+        "renamedFieldName": "(Weight & Vitals) Resps. (/min)"
       },
       {
         "fieldName": "fld_Vitals_Resps_Max",
-        "renamedFieldName": "Respiratory Rate Max"
+        "renamedFieldName": "(Weight & Vitals) Respiratory Rate Max"
       },
       {
         "fieldName": "fld_Vitals_Resps_Min",
-        "renamedFieldName": "Respiratory Rate Min"
+        "renamedFieldName": "(Weight & Vitals) Respiratory Rate Min"
       },
       {
         "fieldName": "fld_Vitals_Resps_Notes",
-        "renamedFieldName": "Respiratory Rate Notes"
+        "renamedFieldName": "(Weight & Vitals) Respiratory Rate Notes"
       },
       {
         "fieldName": "fld_Vitals_SO2",
-        "renamedFieldName": "SO2"
+        "renamedFieldName": "(Weight & Vitals) SO2"
       },
       {
         "fieldName": "fld_Vitals_SO2_Max",
-        "renamedFieldName": "SO2 Max"
+        "renamedFieldName": "(Weight & Vitals) SO2 Max"
       },
       {
         "fieldName": "fld_Vitals_SO2_Min",
-        "renamedFieldName": "SO2 Min"
+        "renamedFieldName": "(Weight & Vitals) SO2 Min"
       },
       {
         "fieldName": "fld_Vitals_SO2_Notes",
-        "renamedFieldName": "SO2 Notes"
+        "renamedFieldName": "(Weight & Vitals) SO2 Notes"
       },
       {
         "fieldName": "fld_Vitals_Temp",
-        "renamedFieldName": "Temp. (°C)"
+        "renamedFieldName": "(Weight & Vitals) Temp. (°C)"
       },
       {
         "fieldName": "fld_Vitals_Temp_Max",
-        "renamedFieldName": "Temperature Max"
+        "renamedFieldName": "(Weight & Vitals) Temperature Max"
       },
       {
         "fieldName": "fld_Vitals_Temp_Min",
-        "renamedFieldName": "Temperature Min"
+        "renamedFieldName": "(Weight & Vitals) Temperature Min"
       },
       {
         "fieldName": "fld_Vitals_Temp_Notes",
-        "renamedFieldName": "Temperature Notes"
+        "renamedFieldName": "(Weight & Vitals) Temperature Notes"
       },
       {
         "fieldName": "fld_Vitals_Time",
-        "renamedFieldName": "Vitals Time"
+        "renamedFieldName": "(Weight & Vitals) Vitals Time"
       },
       {
         "fieldName": "fld_Vitals_Weight",
-        "renamedFieldName": "Weight (kg)"
+        "renamedFieldName": "(Weight & Vitals) Weight (kg)"
       },
       {
         "fieldName": "fld_Vitals_Weight_Max",
-        "renamedFieldName": "Weight Max"
+        "renamedFieldName": "(Weight & Vitals) Weight Max"
       },
       {
         "fieldName": "fld_Vitals_Weight_Min",
-        "renamedFieldName": "Weight Min"
+        "renamedFieldName": "(Weight & Vitals) Weight Min"
       },
       {
         "fieldName": "fld_Vitals_Weight_Notes",
-        "renamedFieldName": "Weight Notes"
+        "renamedFieldName": "(Weight & Vitals) Weight Notes"
       }
     ]
   }

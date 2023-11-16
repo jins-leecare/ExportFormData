@@ -21,6 +21,9 @@ public class TasksRow implements Serializable {
     private String dismissedBy;
     private String dismissedOn;
     private String supplier;
+    private String signedBy;
+
+    private byte[] signatureImage;
 
     /** @return the Start Date (not null) */
     public String getDate() {
@@ -202,6 +205,34 @@ public class TasksRow implements Serializable {
      */
     public void setSupplier(String aSupplier) {
         supplier = aSupplier;
+    }
+
+    /**
+     * Gets the staff / care recipient / family member / villa/ retirement home occupant signing task
+     * completion.
+     *
+     * @return aSignedBy signed by person (never null)
+     */
+    public String getSignedBy() {
+        return signedBy;
+    }
+
+    /**
+     * Sets the staff / care recipient / family member / villa/ retirement home occupant signing task
+     * completion.
+     *
+     * @param aSignedBy signed by person (not null)
+     */
+    public void setSignedBy(String aSignedBy) {
+        signedBy = aSignedBy;
+    }
+
+    public byte[] getSignatureImage() {
+        return signatureImage;
+    }
+
+    public void setSignatureImage(byte[] signatureImage) {
+        this.signatureImage = signatureImage;
     }
 }
 

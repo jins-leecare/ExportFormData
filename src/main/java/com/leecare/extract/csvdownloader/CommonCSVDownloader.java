@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -53,12 +52,14 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
                 header.add("dateOfBirth");
                 header.add("NRICNumber");
                 for (Field field : fieldList) {
-                    if (fieldMapping != null) {
-                        if (fieldMapping.containsKey(field.getName())) {
-                            header.add(fieldMapping.get(field.getName()));
+                    if(!field.getName().equals("signatureImage")) {
+                        if (fieldMapping != null) {
+                            if (fieldMapping.containsKey(field.getName())) {
+                                header.add(fieldMapping.get(field.getName()));
+                            }
+                        } else {
+                            header.add(field.getName());
                         }
-                    } else {
-                        header.add(field.getName());
                     }
                 }
 
@@ -112,29 +113,31 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
                         }
                     }
                     for (Field field : fieldList) {
-                        if (Objects.isNull(fieldMapping) || fieldMapping.containsKey(field.getName())) {
-                            field.setAccessible(true);
-                            try {
-                                Object value = field.get(obj);
-                                if (value != null && value instanceof List<?>) {
-                                    try {
-                                        List<PersonNoteComments> commentsList = (List<PersonNoteComments>) value;
-                                        StringBuilder combinedComments = new StringBuilder();
-                                        for (PersonNoteComments comment : commentsList) {
-                                            combinedComments.append("\"").append(comment.getComment()).append("\" (").append(comment.getCreatedOnForReport()).append("), ");
+                        if (!field.getName().equals("signatureImage")) {
+                            if (Objects.isNull(fieldMapping) || fieldMapping.containsKey(field.getName())) {
+                                field.setAccessible(true);
+                                try {
+                                    Object value = field.get(obj);
+                                    if (value != null && value instanceof List<?>) {
+                                        try {
+                                            List<PersonNoteComments> commentsList = (List<PersonNoteComments>) value;
+                                            StringBuilder combinedComments = new StringBuilder();
+                                            for (PersonNoteComments comment : commentsList) {
+                                                combinedComments.append("\"").append(comment.getComment()).append("\" (").append(comment.getCreatedOnForReport()).append("), ");
+                                            }
+                                            if (combinedComments.length() > 0) {
+                                                combinedComments.delete(combinedComments.length() - 2, combinedComments.length()); // Remove the trailing comma and space
+                                            }
+                                            record.add(combinedComments.toString());
+                                        } catch (Exception exception) {
+                                            exception.printStackTrace();
                                         }
-                                        if (combinedComments.length() > 0) {
-                                            combinedComments.delete(combinedComments.length() - 2, combinedComments.length()); // Remove the trailing comma and space
-                                        }
-                                        record.add(combinedComments.toString());
-                                    } catch (Exception exception) {
-                                        exception.printStackTrace();
+                                    } else {
+                                        record.add(value != null ? value.toString() : ""); // Convert to String
                                     }
-                                } else {
-                                    record.add(value != null ? value.toString() : ""); // Convert to String
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
                             }
                         }
                     }
