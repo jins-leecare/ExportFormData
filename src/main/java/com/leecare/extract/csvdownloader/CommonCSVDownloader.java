@@ -123,7 +123,8 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
                                             List<PersonNoteComments> commentsList = (List<PersonNoteComments>) value;
                                             StringBuilder combinedComments = new StringBuilder();
                                             for (PersonNoteComments comment : commentsList) {
-                                                combinedComments.append("\"").append(comment.getComment()).append("\" (").append(comment.getCreatedOnForReport()).append("), ");
+                                                combinedComments.append("\"").append(comment.getComment()).append("\" (").append(comment.getCreatedOnForReport())
+                                                        .append(" ").append(comment.getCreatedUserName()).append("), ");
                                             }
                                             if (combinedComments.length() > 0) {
                                                 combinedComments.delete(combinedComments.length() - 2, combinedComments.length()); // Remove the trailing comma and space
