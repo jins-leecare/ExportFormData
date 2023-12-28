@@ -50,6 +50,8 @@ public class ExtractionUtils {
                     params.setProgressNotes(Boolean.valueOf(value));
                 } else if ("-adverseReactions".equals(key)) {
                     params.setAdverseReaction(Boolean.valueOf(value));
+                } else if ("-SDDMedications".equals(key)) {
+                    params.setSddMedications(Boolean.valueOf(value));
                 } else if ("-pdfExtract".equals(key)) {
                     params.setPdfExtract(Boolean.valueOf(value));
                 } else if ("-excludeUnadmittedResidentsFlag".equals(key)) {

@@ -8,6 +8,7 @@ public class FieldValueDetails implements Serializable {
     private Integer recordID;
     private String fieldValue;
     private Date dateCreated;
+    private String createdBy;
     private Integer batchID;
     private Integer schemaID;
     private Date valueDate;
@@ -37,6 +38,7 @@ public class FieldValueDetails implements Serializable {
             Integer aRecordID,
             String aFieldValue,
             Date aDateCreated,
+            String aCreatedBy,
             Integer aBatchID,
             Integer aSchemaID,
             Date aValueDate,
@@ -48,6 +50,7 @@ public class FieldValueDetails implements Serializable {
         recordID = aRecordID;
         fieldValue = aFieldValue;
         dateCreated = aDateCreated;
+        createdBy = aCreatedBy;
         batchID = aBatchID;
         schemaID = aSchemaID;
         valueDate = aValueDate;
@@ -73,6 +76,14 @@ public class FieldValueDetails implements Serializable {
         this.fieldValue = fieldValue;
         this.dateCreated = dateCreated;
         this.valueDate = valueDate;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     /**

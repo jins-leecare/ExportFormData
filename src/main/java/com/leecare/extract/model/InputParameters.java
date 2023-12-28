@@ -14,6 +14,7 @@ public class InputParameters {
     private Boolean bedMovement = false;
     private Boolean prescriptions = false;
     private Boolean medications = false;
+    private Boolean sddMedications = false;
     private Boolean pdfExtract = false;
     private String fromDate;
     private String toDate;
@@ -105,6 +106,12 @@ public class InputParameters {
 
     public void setMedications(Boolean medications) {
         this.medications = medications;
+    }
+    public Boolean getSddMedications() {
+        return sddMedications;
+    }
+    public void setSddMedications(Boolean sddMedications) {
+        this.sddMedications = sddMedications;
     }
 
     public Boolean getDownloadAttachments() {

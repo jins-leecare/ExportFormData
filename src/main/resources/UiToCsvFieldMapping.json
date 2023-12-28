@@ -25,6 +25,103 @@
       {
         "fieldName": "createdOnForReport",
         "renamedFieldName": "Created Date"
+      },
+      {
+        "fieldName": "isActive",
+        "renamedFieldName": "ActiveFlag"
+      }
+    ]
+  },
+  {
+    "formName": "bedMovements",
+    "fields": [
+      {
+        "fieldName": "action",
+        "renamedFieldName": "Ward/Bed Details"
+      },
+      {
+        "fieldName": "residentID",
+        "renamedFieldName": "ResidentID"
+      },
+      {
+        "fieldName": "residentName",
+        "renamedFieldName": "Name"
+      },
+      {
+        "fieldName": "dateOfBirth",
+        "renamedFieldName": "DateOfBirth"
+      },
+      {
+        "fieldName": "govNumber",
+        "renamedFieldName": "NRIC / Passport No."
+      },
+      {
+        "fieldName": "gender",
+        "renamedFieldName": "Gender"
+      },
+      {
+        "fieldName": "admindate",
+        "renamedFieldName": "Date/Time of Admission"
+      },
+      {
+        "fieldName": "newadmission",
+        "renamedFieldName": "New Admission"
+      },
+      {
+        "fieldName": "leavetype",
+        "renamedFieldName": "Leave?"
+      },
+      {
+        "fieldName": "typeOfCare",
+        "renamedFieldName": "Type of Care"
+      },
+      {
+        "fieldName": "leavetypereason",
+        "renamedFieldName": "Type of Leave"
+      },
+      {
+        "fieldName": "plannedindicatior",
+        "renamedFieldName": "Planned Indicator"
+      },
+      {
+        "fieldName": "leavereason",
+        "renamedFieldName": "Leave Reason Details"
+      },
+      {
+        "fieldName": "leaveStart",
+        "renamedFieldName": "Leave Start Date/Time"
+      },
+      {
+        "fieldName": "plannedLeaveEnd",
+        "renamedFieldName": "Planned Leave End Date"
+      },
+      {
+        "fieldName": "leaveEndDate",
+        "renamedFieldName": "Leave End Date/Time"
+      },
+      {
+        "fieldName": "dischargetype",
+        "renamedFieldName": "Discharge?"
+      },
+      {
+        "fieldName": "dischargedate",
+        "renamedFieldName": "Discharge Date/Time"
+      },
+      {
+        "fieldName": "dischargetypereason",
+        "renamedFieldName": "Discharge Type"
+      },
+      {
+        "fieldName": "deathdate",
+        "renamedFieldName": "Death Date/Time"
+      },
+      {
+        "fieldName": "dischargereason",
+        "renamedFieldName": "Discharge Reason Details"
+      },
+      {
+        "fieldName": "facilityname",
+        "renamedFieldName": "FacilityName"
       }
     ]
   },

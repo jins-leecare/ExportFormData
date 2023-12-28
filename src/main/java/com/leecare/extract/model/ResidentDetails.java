@@ -24,6 +24,7 @@ public class ResidentDetails implements Serializable {
     private String residentName;
     private Date dateOfBirth;
     private String NRICNumber;
+    private String lastSavedByAndDate;
     private Map<String, FieldValue> fieldValueMap = new LinkedHashMap<>();
     /**
      * @return the residentID
@@ -85,6 +86,19 @@ public class ResidentDetails implements Serializable {
     public void setNRICNumber(String aNRICNumber) {
         NRICNumber = aNRICNumber;
     }
+
+    /**
+     * @return the lastSavedByAndDate
+     */
+    public String getLastSavedByAndDate() {
+        return lastSavedByAndDate;}
+    /**
+     * Sets the lastSavedByAndDate.
+     *
+     * @param aLastSavedByAndDate the lastSavedByAndDate to set
+     */
+    public void setLastSavedByAndDate(String aLastSavedByAndDate) {
+        lastSavedByAndDate = aLastSavedByAndDate;}
 
     public Map<String, FieldValue> getFieldValueMap() {
         return fieldValueMap;

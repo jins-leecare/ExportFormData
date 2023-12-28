@@ -16,11 +16,13 @@ public class CSVDownloaderFactory {
         } else if (parameters.getRegularForm()) {
             return new RegularFormFormCSVDownloader(dataExtractionService);
         } else if (parameters.getBedMovement()) {
-            return new BedMovementCSVDownloader(dataExtractionService);
+            return new TotalBedMovementCSVDownloader(dataExtractionService);
         } else if (parameters.getPrescriptions()) {
             return new PrescriptionsCSVDownloader(dataExtractionService);
         } else if (parameters.getMedications()) {
             return new MedicationsCSVDownloader(dataExtractionService);
+        }  else if (parameters.getSddMedications()) {
+            return new SDDMedicationsDownloader(dataExtractionService);
         } else if (parameters.getTasks()) {
             return new TasksCSVDownloader(dataExtractionService);
         } else if (parameters.getProgressNotes()) {

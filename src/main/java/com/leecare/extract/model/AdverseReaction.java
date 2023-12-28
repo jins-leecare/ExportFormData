@@ -21,6 +21,7 @@ public class AdverseReaction implements Serializable {
     private String allergyOrSensitivity;
     private String reactionDescription;
     private String comment;
+    private String isActive;
 
     public Long getId() {
         return id;
@@ -151,4 +152,18 @@ public class AdverseReaction implements Serializable {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
+    /**
+     * @return the isActive
+     */
+    public String getIsActive() {
+        return isActive;}
+
+    /**
+     * Sets the isActive.
+     *
+     * @param aIsActive the isActive to set
+     */
+    public void setIsActive(String aIsActive) {
+        isActive = aIsActive;}
 }

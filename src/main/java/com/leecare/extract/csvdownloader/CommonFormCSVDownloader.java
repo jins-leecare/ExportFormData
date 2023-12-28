@@ -2,6 +2,7 @@ package com.leecare.extract.csvdownloader;
 
 import com.leecare.extract.model.*;
 import com.leecare.extract.utils.StringUtils;
+import com.leecare.extract.utils.WeightAndVitalUtils;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
@@ -70,12 +71,16 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                 headerList.add("dateOfBirth");
                 headerList.add("NRICNumber");
                 headerList.add("LoggedByUser");
-                if (formName.equalsIgnoreCase("prescriptions")) {
+                if (formName.equalsIgnoreCase("prescriptions")
+                        || formName.equalsIgnoreCase("medications")) {
                     headerList.add("prescriptionDetailsID");
                 } else {
                     headerList.add("RecordID");
                 }
                 headerList.add("DateCreated");
+                if (formName.equalsIgnoreCase("frmGENVitalSigns")) {
+                    headerList.add("(Neurological Observations) Total Score");
+                }
 
                 Set<String> fieldNames = new LinkedHashSet<>();
 
@@ -97,12 +102,15 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                                 }
                             } else {
                                 String caption = fieldValueDetails.getFieldCaption();
-                                if (resident.getFieldValueMap().get(newFieldName).values()
-                                        .stream().filter(value -> value.getFieldCaption() != null
-                                                && value.getFieldCaption().equalsIgnoreCase(caption)).count() > 1) {
+                                if (hasDuplicateFieldCaptions(resident.getFieldValueMap(), caption)) {
                                     headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
                                 } else {
-                                    headerList.add(escapeField(caption));
+                                    if (formName.equalsIgnoreCase("frmGENVitalSigns")) {
+                                        headerList.add(escapeField(fieldNameCaptionMapping.getOrDefault(newFieldName, caption)));
+                                    } else {
+                                        headerList.add(escapeField(caption));
+                                    }
+
                                 }
                             }
                             fieldNames.add(newFieldName);
@@ -126,10 +134,11 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                         row.add(residentDetails.getResidentName());
                         row.add(DATE_FORMAT.format(residentDetails.getDateOfBirth()));
                         row.add(residentDetails.getNRICNumber());
-                        row.add(residentDetails.getLoggedByUser());
-                        row.add(recordID.toString());
                         Map<String, FieldValueDetails> fieldValues = extractFieldValues(residentDetails, recordID, fieldNames);
+                        row.add(getLoggedBy(fieldValues));
+                        row.add(recordID.toString());
                         row.add(DATE_FORMAT.format(getRecordDate(fieldValues)));
+                        row.add(getTotalScore(fieldValues));
 
                         // Get the field values for the current resident and recordID
                         // Add field values to the row
@@ -151,6 +160,16 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
 
         System.out.println("CSV Generated(with range) successfully for " + formName + "at " + LocalDateTime.now());
         System.out.println();
+    }
+
+    private String getTotalScore(Map<String, FieldValueDetails> fieldValues) {
+        Object eyeResp = WeightAndVitalUtils.getFieldValueFromHash(fieldValues, WeightAndVitalUtils.NEURO_OBS_EYE_RESP);
+        Object verbRep = WeightAndVitalUtils.getFieldValueFromHash(fieldValues, WeightAndVitalUtils.NEURO_OBS_VERB_RESP);
+        Object motorResp = WeightAndVitalUtils.getFieldValueFromHash(fieldValues, WeightAndVitalUtils.NEURO_OBS_MOTOR_RESP);
+        return String.valueOf(WeightAndVitalUtils.generateGcsScore(
+                eyeResp != null ? String.valueOf(eyeResp) : null,
+                verbRep != null ? String.valueOf(verbRep) : null,
+                motorResp != null ? String.valueOf(motorResp) : null));
     }
 
     public void saveFileAttachmentsToFolder(InputParameters params, String subFolderName, List<FileAttachment> fileAttachments) throws IOException {
@@ -367,6 +386,18 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
         return date;
     }
 
+    private static String getLoggedBy(Map<String, FieldValueDetails> fieldValues) throws ParseException {
+        String loggedBy = null;
+        for (Map.Entry<String, FieldValueDetails> entry : fieldValues.entrySet()) {
+            FieldValueDetails value = entry.getValue();
+            if (value != null) {
+                loggedBy = value.getCreatedBy();
+                break;
+            }
+        }
+        return loggedBy;
+    }
+
     private static Set<String> extractFieldNames(Map<Integer, ResidentRecordDetails> residentDetailsMap) {
         Set<String> fieldNames = new LinkedHashSet<>();
         for (ResidentRecordDetails residentDetails : residentDetailsMap.values()) {
@@ -452,6 +483,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                 headerList.add("residentName");
                 headerList.add("dateOfBirth");
                 headerList.add("NRICNumber");
+                headerList.add("LastSavedByAndDate");
 
                 List<String> fieldNames = new ArrayList<>();
 
@@ -499,6 +531,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                     recordList.add(resident.getResidentName());
                     recordList.add(DATE_FORMAT.format(resident.getDateOfBirth()));
                     recordList.add(resident.getNRICNumber());
+                    recordList.add(resident.getLastSavedByAndDate());
 
                     Map<String, FieldValue> fieldValueMap = resident.getFieldValueMap();
                     for (String newFieldName : fieldNames) {
@@ -591,6 +624,25 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             return "png";
         }
         return "";
+    }
+
+    private boolean hasDuplicateFieldCaptions(Map<String, Map<Integer, FieldValueDetails>> fieldValueMap, String caption) {
+        Set<String> fieldCaptionsSet = new HashSet<>();
+
+        for (Map<Integer, FieldValueDetails> innerMap : fieldValueMap.values()) {
+            FieldValueDetails fieldValueDetails = innerMap.values().stream().findFirst().get();
+            String fieldCaption = fieldValueDetails.getFieldCaption();
+
+            // Check for duplicates
+            if (fieldCaption != null && fieldCaption.equals(caption)) {
+                if (!fieldCaptionsSet.add(fieldCaption)) {
+                    // Duplicate found
+                    return true;
+                }
+            }
+        }
+        // No duplicates found
+        return false;
     }
 
     static class RecordDateComparator implements Comparator<Integer> {

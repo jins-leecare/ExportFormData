@@ -145,6 +145,24 @@ public class DataExtractionService {
         return bedMovements;
     }
 
+    public List<TotalBedMovement> extractTotalBedMovements(InputParameters parameters) {
+        String jsonBody = "{" +
+                "\"FromDate\":\"" + parameters.getFromDate() + "\" , " +
+                "\"ToDate\":\"" + parameters.getToDate() + "\"" +
+                "}";
+        String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId()) + "/dataextract/extractTotalMovementReport";
+        Response response = restController.postAndRetrieveData(parameters, url, jsonBody);
+        List<TotalBedMovement> resultList = null;
+        if (Objects.nonNull(response) && response.getStatus() == Response.Status.OK.getStatusCode()) {
+            try {
+                resultList = response.readEntity(new GenericType<List<TotalBedMovement>>() {});
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return resultList;
+    }
+
     public Map<Integer, ResidentRecordDetails> extractPrescriptionDetails(InputParameters parameters, String jsonBody) {
         String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId()) + "/dataextract/extractPrescriptionDetails";
         Response response = restController.postAndRetrieveData(parameters, url, jsonBody);
@@ -219,6 +237,22 @@ public class DataExtractionService {
         if (Objects.nonNull(response) && response.getStatus() == Response.Status.OK.getStatusCode()) {
             try {
                 resultList = response.readEntity(new GenericType<List<AdverseReactionDetails>>() {});
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return resultList;
+    }
+
+    public List<MedicationData> extractSDDMedications(InputParameters parameters) {
+        String jsonBody = "{}";
+        String url = parameters.getConfigProperties().getUrl() + "/api/v1/facilities/" + Integer.parseInt(parameters.getFacilityId())
+                + "/dataextract/extractSDDMedications";
+        Response response = restController.postAndRetrieveData(parameters, url, jsonBody);
+        List<MedicationData> resultList = null;
+        if (Objects.nonNull(response) && response.getStatus() == Response.Status.OK.getStatusCode()) {
+            try {
+                resultList = response.readEntity(new GenericType<List<MedicationData>>() {});
             } catch (Exception e) {
                 e.printStackTrace();
             }

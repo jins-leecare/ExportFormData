@@ -46,6 +46,7 @@ public class CustomGridFormFormCSVDownloader extends CommonFormCSVDownloader {
         try {
             Map<String, String> fieldMapping = CsvToUiFieldMappingLoader.loadMapping(form);
             if (fieldMapping != null) {
+                fieldCaptionMapping.clear();
                 fieldCaptionMapping.putAll(fieldMapping);
             }
         } catch (Exception exception) {
