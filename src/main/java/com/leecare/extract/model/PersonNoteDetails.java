@@ -1,13 +1,18 @@
 /*
  * PersonNoteDetails.java
  *
- * Copyright © 2019 Leecare. All Rights Reserved.
+ * Copyright Â© 2023 Leecare. All Rights Reserved.
  */
 
 package com.leecare.extract.model;
 
 import java.util.List;
 
+/**
+ * This is used for a PersonNoteDetails.
+ *
+ * @author jjoy
+ */
 public class PersonNoteDetails extends PersonNoteBase {
   private List<PersonNoteComments> comments;
   private List<Object> alertDetails;
@@ -27,157 +32,233 @@ public class PersonNoteDetails extends PersonNoteBase {
   private String residentName;
   private String statusString;
   private String commentsString;
-  private String subReportDirectory; // only for reporting purposes.
-
+  private String subReportDirectory;
+  /** @return the comments */
   public List<PersonNoteComments> getComments() {
     return comments;
   }
-
-  public void setComments(List<PersonNoteComments> comments) {
-    this.comments = comments;
+  /**
+   * Sets the comments.
+   *
+   * @param aComments the comments to set
+   */
+  public void setComments(List<PersonNoteComments> aComments) {
+    comments = aComments;
   }
-
+  /** @return the alertDetails */
   public List<Object> getAlertDetails() {
     return alertDetails;
   }
-
-  public void setAlertDetails(List<Object> alertDetails) {
-    this.alertDetails = alertDetails;
+  /**
+   * Sets the alertDetails.
+   *
+   * @param aAlertDetails the alertDetails to set
+   */
+  public void setAlertDetails(List<Object> aAlertDetails) {
+    alertDetails = aAlertDetails;
   }
-
+  /** @return the followupAlert */
   public List<Object> getFollowupAlert() {
     return followupAlert;
   }
-
-  public void setFollowupAlert(List<Object> followupAlert) {
-    this.followupAlert = followupAlert;
+  /**
+   * Sets the followupAlert.
+   *
+   * @param aFollowupAlert the followupAlert to set
+   */
+  public void setFollowupAlert(List<Object> aFollowupAlert) {
+    followupAlert = aFollowupAlert;
   }
-
+  /** @return the categoryString */
   public String getCategoryString() {
     return categoryString;
   }
-
-  public void setCategoryString(String categoryString) {
-    this.categoryString = categoryString;
+  /**
+   * Sets the categoryString.
+   *
+   * @param aCategoryString the categoryString to set
+   */
+  public void setCategoryString(String aCategoryString) {
+    categoryString = aCategoryString;
   }
-
+  /** @return the categoryStringForReports */
   public String getCategoryStringForReports() {
     return categoryStringForReports;
   }
-
-  public void setCategoryStringForReports(String categoryStringForReports) {
-    this.categoryStringForReports = categoryStringForReports;
+  /**
+   * Sets the categoryStringForReports.
+   *
+   * @param aCategoryStringForReports the categoryStringForReports to set
+   */
+  public void setCategoryStringForReports(String aCategoryStringForReports) {
+    categoryStringForReports = aCategoryStringForReports;
   }
-
+  /** @return the createdUserName */
   public String getCreatedUserName() {
     return createdUserName;
   }
-
-  public void setCreatedUserName(String createdUserName) {
-    this.createdUserName = createdUserName;
+  /**
+   * Sets the createdUserName.
+   *
+   * @param aCreatedUserName the createdUserName to set
+   */
+  public void setCreatedUserName(String aCreatedUserName) {
+    createdUserName = aCreatedUserName;
   }
-
+  /** @return the personDetails */
   public PersonMinimalDetails getPersonDetails() {
     return personDetails;
   }
-
-  public void setPersonDetails(PersonMinimalDetails personDetails) {
-    this.personDetails = personDetails;
+  /**
+   * Sets the personDetails.
+   *
+   * @param aPersonDetails the personDetails to set
+   */
+  public void setPersonDetails(PersonMinimalDetails aPersonDetails) {
+    personDetails = aPersonDetails;
   }
-
+  /** @return the status */
   public Object getStatus() {
     return status;
   }
-
-  public void setStatus(Object status) {
-    this.status = status;
+  /**
+   * Sets the status.
+   *
+   * @param aStatus the status to set
+   */
+  public void setStatus(Object aStatus) {
+    status = aStatus;
   }
-
+  /** @return the savedInErrorComment */
   public String getSavedInErrorComment() {
     return savedInErrorComment;
   }
-
-  public void setSavedInErrorComment(String savedInErrorComment) {
-    this.savedInErrorComment = savedInErrorComment;
+  /**
+   * Sets the savedInErrorComment.
+   *
+   * @param aSavedInErrorComment the savedInErrorComment to set
+   */
+  public void setSavedInErrorComment(String aSavedInErrorComment) {
+    savedInErrorComment = aSavedInErrorComment;
   }
-
+  /** @return the savedInErrorUserName */
   public String getSavedInErrorUserName() {
     return savedInErrorUserName;
   }
-
-  public void setSavedInErrorUserName(String savedInErrorUserName) {
-    this.savedInErrorUserName = savedInErrorUserName;
+  /**
+   * Sets the savedInErrorUserName.
+   *
+   * @param aSavedInErrorUserName the savedInErrorUserName to set
+   */
+  public void setSavedInErrorUserName(String aSavedInErrorUserName) {
+    savedInErrorUserName = aSavedInErrorUserName;
   }
-
+  /** @return the savedInErrorDate */
   public Object getSavedInErrorDate() {
     return savedInErrorDate;
   }
-
-  public void setSavedInErrorDate(Object savedInErrorDate) {
-    this.savedInErrorDate = savedInErrorDate;
+  /**
+   * Sets the savedInErrorDate.
+   *
+   * @param aSavedInErrorDate the savedInErrorDate to set
+   */
+  public void setSavedInErrorDate(Object aSavedInErrorDate) {
+    savedInErrorDate = aSavedInErrorDate;
   }
-
+  /** @return the read */
   public boolean isRead() {
     return read;
   }
-
-  public void setRead(boolean read) {
-    this.read = read;
+  /**
+   * Sets the read.
+   *
+   * @param aRead the read to set
+   */
+  public void setRead(boolean aRead) {
+    read = aRead;
   }
-
+  /** @return the systemGenerated */
   public boolean isSystemGenerated() {
     return systemGenerated;
   }
-
-  public void setSystemGenerated(boolean systemGenerated) {
-    this.systemGenerated = systemGenerated;
+  /**
+   * Sets the systemGenerated.
+   *
+   * @param aSystemGenerated the systemGenerated to set
+   */
+  public void setSystemGenerated(boolean aSystemGenerated) {
+    systemGenerated = aSystemGenerated;
   }
-
+  /** @return the admittedTo */
   public String getAdmittedTo() {
     return admittedTo;
   }
-
-  public void setAdmittedTo(String admittedTo) {
-    this.admittedTo = admittedTo;
+  /**
+   * Sets the admittedTo.
+   *
+   * @param aAdmittedTo the admittedTo to set
+   */
+  public void setAdmittedTo(String aAdmittedTo) {
+    admittedTo = aAdmittedTo;
   }
-
+  /** @return the admittedToForReports */
   public String getAdmittedToForReports() {
     return admittedToForReports;
   }
-
-  public void setAdmittedToForReports(String admittedToForReports) {
-    this.admittedToForReports = admittedToForReports;
+  /**
+   * Sets the admittedToForReports.
+   *
+   * @param aAdmittedToForReports the admittedToForReports to set
+   */
+  public void setAdmittedToForReports(String aAdmittedToForReports) {
+    admittedToForReports = aAdmittedToForReports;
   }
-
+  /** @return the residentName */
   public String getResidentName() {
     return residentName;
   }
-
-  public void setResidentName(String residentName) {
-    this.residentName = residentName;
+  /**
+   * Sets the residentName.
+   *
+   * @param aResidentName the residentName to set
+   */
+  public void setResidentName(String aResidentName) {
+    residentName = aResidentName;
   }
-
+  /** @return the statusString */
   public String getStatusString() {
     return statusString;
   }
-
-  public void setStatusString(String statusString) {
-    this.statusString = statusString;
+  /**
+   * Sets the statusString.
+   *
+   * @param aStatusString the statusString to set
+   */
+  public void setStatusString(String aStatusString) {
+    statusString = aStatusString;
   }
-
+  /** @return the commentsString */
   public String getCommentsString() {
     return commentsString;
   }
-
-  public void setCommentsString(String commentsString) {
-    this.commentsString = commentsString;
+  /**
+   * Sets the commentsString.
+   *
+   * @param aCommentsString the commentsString to set
+   */
+  public void setCommentsString(String aCommentsString) {
+    commentsString = aCommentsString;
   }
-
+  /** @return the subReportDirectory */
   public String getSubReportDirectory() {
     return subReportDirectory;
   }
-
-  public void setSubReportDirectory(String subReportDirectory) {
-    this.subReportDirectory = subReportDirectory;
+  /**
+   * Sets the subReportDirectory.
+   *
+   * @param aSubReportDirectory the subReportDirectory to set
+   */
+  public void setSubReportDirectory(String aSubReportDirectory) {
+    subReportDirectory = aSubReportDirectory;
   }
 }

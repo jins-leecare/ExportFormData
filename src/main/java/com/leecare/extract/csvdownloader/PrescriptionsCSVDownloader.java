@@ -1,3 +1,9 @@
+/*
+ * PrescriptionsCSVDownloader.java
+ *
+ * Copyright Â© 2023 Leecare. All Rights Reserved.
+ */
+
 package com.leecare.extract.csvdownloader;
 
 import com.leecare.extract.model.InputParameters;
@@ -7,31 +13,40 @@ import com.leecare.extract.service.DataExtractionService;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * This is used for a PrescriptionsCSVDownloader.
+ *
+ * @author jjoy
+ */
 public class PrescriptionsCSVDownloader extends CommonFormCSVDownloader {
+  private DataExtractionService dataExtractionService;
 
-    DataExtractionService dataExtractionService;
+  /**
+   * Constructs a PrescriptionsCSVDownloader.
+   *
+   * @param aDataExtractionService dataExtractionService (not null)
+   */
+  public PrescriptionsCSVDownloader(DataExtractionService aDataExtractionService) {
+    this.dataExtractionService = aDataExtractionService;
+  }
 
-    public PrescriptionsCSVDownloader(DataExtractionService dataExtractionService) {
-        this.dataExtractionService = dataExtractionService;
-    }
+  @Override
+  public void downloadCSV(InputParameters aParams) {
+    retrieveDataAndDownloadCSV(aParams, new HashMap<>());
+  }
 
-    @Override
-    public void downloadCSV(InputParameters params) {
-        retrieveDataAndDownloadCSV(params, new HashMap<>());
-    }
-
-    private void retrieveDataAndDownloadCSV(InputParameters params, Map<String, String> fieldCaptionMapping) {
-        String jsonBody = "{" +
-                "\"FromDate\":\"" + params.getFromDate() + "\" , " +
-                "\"ToDate\":\"" + params.getToDate() + "\"" +
-                "}";
-        Map<Integer, ResidentRecordDetails> residentDetailsMap = dataExtractionService.extractPrescriptionDetails(params, jsonBody);
-        TreeMap<Integer, ResidentRecordDetails> sortedResidentDetailsMap = new TreeMap<>(residentDetailsMap);
-        super.prepareSummaryCSV(residentDetailsMap, "prescriptions", params);
-        super.downloadCSVForRange(params,
-                "PRESCRIPTIONS",
-                fieldCaptionMapping,
-                "Prescriptions",
-                sortedResidentDetailsMap);
-    }
+  private void retrieveDataAndDownloadCSV(
+      InputParameters aParams, Map<String, String> aFieldCaptionMapping) {
+    String jsonBody = "{" +
+        "\"FromDate\":\"" + aParams.getFromDate() + "\" , " +
+        "\"ToDate\":\"" + aParams.getToDate() + "\"" +
+        "}";
+    Map<Integer, ResidentRecordDetails> residentDetailsMap =
+        dataExtractionService.extractPrescriptionDetails(aParams, jsonBody);
+    TreeMap<Integer, ResidentRecordDetails> sortedResidentDetailsMap =
+        new TreeMap<>(residentDetailsMap);
+    super.prepareSummaryCSV(residentDetailsMap, "prescriptions", aParams);
+    super.downloadCSVForRange(
+        aParams, "PRESCRIPTIONS", aFieldCaptionMapping, "Prescriptions", sortedResidentDetailsMap);
+  }
 }

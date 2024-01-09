@@ -1,45 +1,68 @@
+/*
+ * ConfigProperties.java
+ *
+ * Copyright Â© 2023 Leecare. All Rights Reserved.
+ */
+
 package com.leecare.extract.model;
 
-import java.io.FileInputStream;
-import java.util.Properties;
-
+/**
+ * This is used for a ConfigProperties.
+ *
+ * @author jjoy
+ */
 public class ConfigProperties {
 
-    private String url;
-    private String userName;
-    private String passWord;
-    private String filePath;
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassWord() {
-        return passWord;
-    }
-
-    public void setPassWord(String passWord) {
-        this.passWord = passWord;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
+  private String url;
+  private String userName;
+  private String passWord;
+  private String filePath;
+  /** @return the url */
+  public String getUrl() {
+    return url;
+  }
+  /**
+   * Sets the url.
+   *
+   * @param aUrl the url to set
+   */
+  public void setUrl(String aUrl) {
+    url = aUrl;
+  }
+  /** @return the userName */
+  public String getUserName() {
+    return userName;
+  }
+  /**
+   * Sets the userName.
+   *
+   * @param aUserName the userName to set
+   */
+  public void setUserName(String aUserName) {
+    userName = aUserName;
+  }
+  /** @return the passWord */
+  public String getPassWord() {
+    return passWord;
+  }
+  /**
+   * Sets the passWord.
+   *
+   * @param aPassWord the passWord to set
+   */
+  public void setPassWord(String aPassWord) {
+    passWord = aPassWord;
+  }
+  /** @return the filePath */
+  public String getFilePath() {
+    return filePath;
+  }
+  /**
+   * Sets the filePath.
+   *
+   * @param aFilePath the filePath to set
+   */
+  public void setFilePath(String aFilePath) {
+    filePath = aFilePath;
+  }
 }

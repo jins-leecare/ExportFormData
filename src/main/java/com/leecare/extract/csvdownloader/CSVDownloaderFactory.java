@@ -1,38 +1,57 @@
+/*
+ * CSVDownloaderFactory.java
+ *
+ * Copyright Â© 2023 Leecare. All Rights Reserved.
+ */
+
 package com.leecare.extract.csvdownloader;
 
 import com.leecare.extract.model.InputParameters;
 import com.leecare.extract.service.DataExtractionService;
 
+/**
+ * This is used for a CSVDownloaderFactory.
+ *
+ * @author jjoy
+ */
 public class CSVDownloaderFactory {
-    public CSVDownloader createCSVDownloader(InputParameters parameters, DataExtractionService dataExtractionService) {
-        if ((parameters.getGridForm())) {
-            return new GridFormFormCSVDownloader(dataExtractionService);
-        } else if (parameters.getSubForm()) {
-            return new SubFormFormCSVDownloader(dataExtractionService);
-        } else if (parameters.getCustomGridForm()) {
-            return new CustomGridFormFormCSVDownloader(dataExtractionService);
-        } else if (parameters.getDownloadAttachments()) {
-            return new AttachmentsDownloader(dataExtractionService);
-        } else if (parameters.getRegularForm()) {
-            return new RegularFormFormCSVDownloader(dataExtractionService);
-        } else if (parameters.getBedMovement()) {
-            return new TotalBedMovementCSVDownloader(dataExtractionService);
-        } else if (parameters.getPrescriptions()) {
-            return new PrescriptionsCSVDownloader(dataExtractionService);
-        } else if (parameters.getMedications()) {
-            return new MedicationsCSVDownloader(dataExtractionService);
-        }  else if (parameters.getSddMedications()) {
-            return new SDDMedicationsDownloader(dataExtractionService);
-        } else if (parameters.getTasks()) {
-            return new TasksCSVDownloader(dataExtractionService);
-        } else if (parameters.getProgressNotes()) {
-            return new ProgressNotesCSVDownloader(dataExtractionService);
-        } else if (parameters.getAdverseReaction()) {
-            return new AdverseReactionsCSVDownloader(dataExtractionService);
-        } else if (parameters.getPdfExtract()) {
-            return new ResidentPDFDownloader(dataExtractionService);
-        } else {
-            throw new IllegalArgumentException("Invalid Option: Please provide correct parameters.");
-        }
+  /**
+   * Method to create corresponding csv downloader factory class
+   *
+   * @param aParameters parameters (not null)
+   * @param aDataExtractionService data extraction service (not null)
+   * @return corresponding downloader class.
+   */
+  public CSVDownloader createCSVDownloader(
+      InputParameters aParameters, DataExtractionService aDataExtractionService) {
+    if ((aParameters.getGridForm())) {
+      return new GridFormFormCSVDownloader(aDataExtractionService);
+    } else if (aParameters.getSubForm()) {
+      return new SubFormFormCSVDownloader(aDataExtractionService);
+    } else if (aParameters.getCustomGridForm()) {
+      return new CustomGridFormFormCSVDownloader(aDataExtractionService);
+    } else if (aParameters.getDownloadAttachments()) {
+      return new AttachmentsDownloader(aDataExtractionService);
+    } else if (aParameters.getRegularForm()) {
+      return new RegularFormFormCSVDownloader(aDataExtractionService);
+    } else if (aParameters.getBedMovement()) {
+      return new TotalBedMovementCSVDownloader(aDataExtractionService);
+    } else if (aParameters.getPrescriptions()) {
+      return new PrescriptionsCSVDownloader(aDataExtractionService);
+    } else if (aParameters.getMedications()) {
+      return new MedicationsCSVDownloader(aDataExtractionService);
+    } else if (aParameters.getSddMedications()) {
+      return new SDDMedicationsDownloader(aDataExtractionService);
+    } else if (aParameters.getTasks()) {
+      return new TasksCSVDownloader(aDataExtractionService);
+    } else if (aParameters.getProgressNotes()) {
+      return new ProgressNotesCSVDownloader(aDataExtractionService);
+    } else if (aParameters.getAdverseReaction()) {
+      return new AdverseReactionsCSVDownloader(aDataExtractionService);
+    } else if (aParameters.getPdfExtract()) {
+      return new ResidentPDFDownloader(aDataExtractionService);
+    } else {
+      throw new IllegalArgumentException("Invalid Option: Please provide correct parameters.");
     }
+  }
 }

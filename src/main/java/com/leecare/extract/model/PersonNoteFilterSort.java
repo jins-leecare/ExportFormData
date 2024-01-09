@@ -1,16 +1,18 @@
 /*
  * PersonNoteFilterSort.java
  *
- * 16/10/2012 Yoseph Phillips - Changed Values as part of fix for PLATM-621
- * 02/05/2014 Sara Soliman - Added room and changed location name [PLATM-862]
- *
- * Copyright 2014 - Leecare
+ * Copyright Â© 2023 Leecare. All Rights Reserved.
  */
-package com.leecare.extract.model;
 
+package com.leecare.extract.model;
 
 import java.io.Serializable;
 
+/**
+ * This is used for a PersonNoteFilterSort.
+ *
+ * @author jjoy
+ */
 public enum PersonNoteFilterSort implements Serializable {
   CREATED_DATE("DateCreated"),
   LOCATION("Location_Name"),
@@ -23,6 +25,7 @@ public enum PersonNoteFilterSort implements Serializable {
     fieldName = aFieldName;
   }
 
+  /** @return fieldName */
   public String getFieldName() {
     return fieldName;
   }

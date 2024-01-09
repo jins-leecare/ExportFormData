@@ -1,3 +1,9 @@
+/*
+ * MedicationsCSVDownloader.java
+ *
+ * Copyright Â© 2023 Leecare. All Rights Reserved.
+ */
+
 package com.leecare.extract.csvdownloader;
 
 import com.leecare.extract.model.InputParameters;
@@ -8,33 +14,43 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * This is used for a MedicationsCSVDownloader.
+ *
+ * @author jjoy
+ */
 public class MedicationsCSVDownloader extends CommonFormCSVDownloader {
-    DataExtractionService dataExtractionService;
+  private DataExtractionService dataExtractionService;
 
-    public MedicationsCSVDownloader(DataExtractionService dataExtractionService) {
-        this.dataExtractionService = dataExtractionService;
-    }
+  /**
+   * Constructs a MedicationsCSVDownloader.
+   *
+   * @param aDataExtractionService dataExtractionService (not null)
+   */
+  public MedicationsCSVDownloader(DataExtractionService aDataExtractionService) {
+    this.dataExtractionService = aDataExtractionService;
+  }
 
-    @Override
-    public void downloadCSV(InputParameters params) {
-        retrieveDataAndDownloadCSV(params, new HashMap<>());
-    }
+  @Override
+  public void downloadCSV(InputParameters aParams) {
+    retrieveDataAndDownloadCSV(aParams, new HashMap<>());
+  }
 
-    private void retrieveDataAndDownloadCSV(InputParameters params, Map<String, String> fieldCaptionMapping) {
-        String jsonBody = "{" +
-                "\"FromDate\":\"" + params.getFromDate() + "\" , " +
-                "\"ToDate\":\"" + params.getToDate() + "\" , " +
-                "\"excludeUnadmittedResidentsFlag\":\"" + params.getExcludeUnadmittedResidentsFlag() + "\" , " +
-                "\"excludeArchivedResidentsFlag\":\"" + params.getExcludeArchivedResidentsFlag() + "\" , " +
-                "\"excludeReservedResidentsFlag\":\"" + params.getExcludeReservedResidentsFlag() + "\"" +
-                "}";
-        Map<Integer, ResidentRecordDetails> residentDetailsMap = dataExtractionService.extractMedicationsDetails(params, jsonBody);
-        TreeMap<Integer, ResidentRecordDetails> sortedResidentDetailsMap = new TreeMap<>(residentDetailsMap);
-        super.prepareSummaryCSV(residentDetailsMap, "medications", params);
-        super.downloadCSVForRange(params,
-                "MEDICATIONS",
-                fieldCaptionMapping,
-                "medications",
-                sortedResidentDetailsMap);
-    }
+  private void retrieveDataAndDownloadCSV(
+      InputParameters aParams, Map<String, String> aFieldCaptionMapping) {
+    String jsonBody = "{" +
+        "\"FromDate\":\"" + aParams.getFromDate() + "\" , " +
+        "\"ToDate\":\"" + aParams.getToDate() + "\" , " +
+        "\"excludeUnadmittedResidentsFlag\":\"" + aParams.getExcludeUnadmittedResidentsFlag() + "\" , " +
+        "\"excludeArchivedResidentsFlag\":\"" + aParams.getExcludeArchivedResidentsFlag() + "\" , " +
+        "\"excludeReservedResidentsFlag\":\"" + aParams.getExcludeReservedResidentsFlag() + "\"" +
+        "}";
+    Map<Integer, ResidentRecordDetails> residentDetailsMap =
+        dataExtractionService.extractMedicationsDetails(aParams, jsonBody);
+    TreeMap<Integer, ResidentRecordDetails> sortedResidentDetailsMap =
+        new TreeMap<>(residentDetailsMap);
+    super.prepareSummaryCSV(residentDetailsMap, "medications", aParams);
+    super.downloadCSVForRange(
+        aParams, "MEDICATIONS", aFieldCaptionMapping, "medications", sortedResidentDetailsMap);
+  }
 }

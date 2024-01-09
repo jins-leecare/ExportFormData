@@ -1,7 +1,18 @@
+/*
+ * TotalBedMovement.java
+ *
+ * Copyright Â© 2023 Leecare. All Rights Reserved.
+ */
+
 package com.leecare.extract.model;
 
 import java.io.Serializable;
 
+/**
+ * This is used for a TotalBedMovement.
+ *
+ * @author jjoy
+ */
 public class TotalBedMovement implements Serializable {
     private static final long serialVersionUID = 1L;
     private String action;
@@ -27,6 +38,10 @@ public class TotalBedMovement implements Serializable {
     private String dischargereason;
     private String facilityname;
 
+    /**
+     * Constructs a TotalBedMovement.
+     *
+     */
     public TotalBedMovement() {}
 
     /**

@@ -7,8 +7,23 @@ import java.text.ParseException;
 import java.util.Map;
 
 public interface CSVDownloader {
-    void downloadCSV(InputParameters params) throws IOException, ParseException;
+    /**
+     * Method to download the csv.
+     * 
+     * @param aParams parameters (not null)
+     * @throws IOException
+     * @throws ParseException
+     */
+    void downloadCSV(InputParameters aParams) throws IOException, ParseException;
 
-    void prepareSummaryCSV(Map<Integer, ?> residentDetailsMap, String formName, InputParameters params);
+    /**
+     * Method to prepare summary.
+     * 
+     * @param aResidentDetailsMap resident details map (can be null)
+     * @param aFormName form name (not null)
+     * @param aParams parameters (not null)
+     */
+    default void prepareSummaryCSV(Map<Integer, ?> aResidentDetailsMap, String aFormName, InputParameters aParams) {
+    }
 
 }

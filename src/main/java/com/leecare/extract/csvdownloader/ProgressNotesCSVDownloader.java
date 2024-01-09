@@ -1,47 +1,69 @@
+/*
+ * ProgressNotesCSVDownloader.java
+ *
+ * Copyright Â© 2023 Leecare. All Rights Reserved.
+ */
+
 package com.leecare.extract.csvdownloader;
 
 import com.leecare.extract.handler.CsvToUiFieldMappingLoader;
 import com.leecare.extract.model.*;
 import com.leecare.extract.service.DataExtractionService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
+/**
+ * This is used for a ProgressNotesCSVDownloader.
+ *
+ * @author jjoy
+ */
 public class ProgressNotesCSVDownloader extends CommonCSVDownloader<PersonNoteDetails> {
-    DataExtractionService dataExtractionService;
+  private static final Logger logger = LogManager.getLogger(ProgressNotesCSVDownloader.class);
 
-    public ProgressNotesCSVDownloader(DataExtractionService dataExtractionService) {
-        this.dataExtractionService = dataExtractionService;
+  private DataExtractionService dataExtractionService;
+
+  /**
+   * Constructs a ProgressNotesCSVDownloader.
+   *
+   * @param dataExtractionService
+   */
+  public ProgressNotesCSVDownloader(DataExtractionService dataExtractionService) {
+    this.dataExtractionService = dataExtractionService;
+  }
+
+  @Override
+  public void downloadCSV(InputParameters aParams) throws IOException, ParseException {
+    String jsonBody = "{" +
+        "\"FromDate\":\"" + aParams.getFromDate() + "\" , " +
+        "\"ToDate\":\"" + aParams.getToDate() + "\" , " +
+        "\"unReadOnly\":\"" + aParams.getUnReadOnly() + "\" , " +
+        "\"excludeUnadmittedResidentsFlag\":\"" + aParams.getExcludeUnadmittedResidentsFlag() + "\"" +
+        "}";
+    List<PersonNoteDetails> personNoteDetails =
+        dataExtractionService.extractProgressNotes(aParams, jsonBody);
+    if (Objects.isNull(personNoteDetails) || personNoteDetails.isEmpty()) {
+      logger.error(
+          "Data is not available for export. Please re-evaluate your parameters for downloading "
+              + "progress notes");
+      return;
     }
-
-    @Override
-    public void downloadCSV(InputParameters params) throws IOException, ParseException {
-        String jsonBody = "{" +
-                "\"FromDate\":\"" + params.getFromDate() + "\" , " +
-                "\"ToDate\":\"" + params.getToDate() + "\" , " +
-                "\"unReadOnly\":\"" + params.getUnReadOnly() + "\" , " +
-                "\"excludeUnadmittedResidentsFlag\":\"" + params.getExcludeUnadmittedResidentsFlag() + "\"" +
-                "}";
-        List<PersonNoteDetails> personNoteDetails = dataExtractionService.extractProgressNotes(params, jsonBody);
-        if (Objects.isNull(personNoteDetails) || personNoteDetails.isEmpty()) {
-            System.out.println("Data is not available for export. Please re-evaluate your parameters for downloading "
-                    + "progress notes" );
-            return;
-        }
-        Collections.sort(personNoteDetails, Comparator.comparingInt(PersonNoteDetails::getPersonId));
-        Map<Integer, ResidentDetails> residentMap = new HashMap<>();
-        personNoteDetails.forEach(personNote -> {
-            if(!residentMap.containsKey(personNote.getPersonId())) {
-                residentMap.putIfAbsent(personNote.getPersonId(), dataExtractionService.extractResident(params, String.valueOf(personNote.getPersonId())));
-            }
+    Collections.sort(personNoteDetails, Comparator.comparingInt(PersonNoteDetails::getPersonId));
+    Map<Integer, ResidentDetails> residentMap = new HashMap<>();
+    personNoteDetails.forEach(
+        personNote -> {
+          if (!residentMap.containsKey(personNote.getPersonId())) {
+            residentMap.putIfAbsent(
+                personNote.getPersonId(),
+                dataExtractionService.extractResident(
+                    aParams, String.valueOf(personNote.getPersonId())));
+          }
         });
-        Map<String, String> fieldMapping = CsvToUiFieldMappingLoader.loadMapping("progressNotes");
-        super.downloadCSV(params, "PROGRESS-NOTES", "progressNotes", personNoteDetails, residentMap, fieldMapping);
-    }
-
-    @Override
-    public void prepareSummaryCSV(Map<Integer, ?> residentDetailsMap, String formName, InputParameters params) {
-
-    }
+    Map<String, String> fieldMapping = CsvToUiFieldMappingLoader.loadMapping("progressNotes");
+    super.downloadCSV(
+        aParams, "PROGRESS-NOTES", "progressNotes", personNoteDetails, residentMap, fieldMapping);
+  }
 }

@@ -1,18 +1,20 @@
 /*
  * PersonMinimalDetails.java
  *
- * Copyright © 2022 Leecare. All Rights Reserved.
+ * Copyright Â© 2023 Leecare. All Rights Reserved.
  */
 
 package com.leecare.extract.model;
 
-
 import java.io.Serializable;
 import java.util.Date;
 
-
-public class PersonMinimalDetails
-    implements Serializable, Comparable<PersonMinimalDetails> {
+/**
+ * This is used for a PersonMinimalDetails.
+ *
+ * @author jjoy
+ */
+public class PersonMinimalDetails implements Serializable, Comparable<PersonMinimalDetails> {
   private int personId;
   private String firstName;
   private String lastName;
@@ -36,164 +38,327 @@ public class PersonMinimalDetails
   private String suggestString;
   private String suggestId;
   private String fullName;
+
+  /** @return the personId */
   public int getPersonId() {
     return personId;
   }
 
-  public void setPersonId(int personId) {
-    this.personId = personId;
+  /**
+   * Sets the personId.
+   *
+   * @param aPersonId the personId to set
+   */
+  public void setPersonId(int aPersonId) {
+    personId = aPersonId;
   }
 
+  /** @return the firstName */
   public String getFirstName() {
     return firstName;
   }
 
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
+  /**
+   * Sets the firstName.
+   *
+   * @param aFirstName the firstName to set
+   */
+  public void setFirstName(String aFirstName) {
+    firstName = aFirstName;
   }
 
+  /** @return the lastName */
   public String getLastName() {
     return lastName;
   }
 
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
+  /**
+   * Sets the lastName.
+   *
+   * @param aLastName the lastName to set
+   */
+  public void setLastName(String aLastName) {
+    lastName = aLastName;
   }
 
+  /** @return the preferredName */
   public String getPreferredName() {
     return preferredName;
   }
 
-  public void setPreferredName(String preferredName) {
-    this.preferredName = preferredName;
+  /**
+   * Sets the preferredName.
+   *
+   * @param aPreferredName the preferredName to set
+   */
+  public void setPreferredName(String aPreferredName) {
+    preferredName = aPreferredName;
   }
 
+  /** @return the reservedBedName */
   public String getReservedBedName() {
     return reservedBedName;
   }
 
-  public void setReservedBedName(String reservedBedName) {
-    this.reservedBedName = reservedBedName;
+  /**
+   * Sets the reservedBedName.
+   *
+   * @param aReservedBedName the reservedBedName to set
+   */
+  public void setReservedBedName(String aReservedBedName) {
+    reservedBedName = aReservedBedName;
   }
 
+  /** @return the admissionStatus */
   public Object getAdmissionStatus() {
     return admissionStatus;
   }
 
-  public void setAdmissionStatus(Object admissionStatus) {
-    this.admissionStatus = admissionStatus;
+  /**
+   * Sets the admissionStatus.
+   *
+   * @param aAdmissionStatus the admissionStatus to set
+   */
+  public void setAdmissionStatus(Object aAdmissionStatus) {
+    admissionStatus = aAdmissionStatus;
   }
 
+  /** @return the occupiedBedName */
   public String getOccupiedBedName() {
     return occupiedBedName;
   }
 
-  public void setOccupiedBedName(String occupiedBedName) {
-    this.occupiedBedName = occupiedBedName;
+  /**
+   * Sets the occupiedBedName.
+   *
+   * @param aOccupiedBedName the occupiedBedName to set
+   */
+  public void setOccupiedBedName(String aOccupiedBedName) {
+    occupiedBedName = aOccupiedBedName;
   }
 
+  /** @return the photoUpdatedOn */
   public Date getPhotoUpdatedOn() {
     return photoUpdatedOn;
   }
 
-  public void setPhotoUpdatedOn(Date photoUpdatedOn) {
-    this.photoUpdatedOn = photoUpdatedOn;
+  /**
+   * Sets the photoUpdatedOn.
+   *
+   * @param aPhotoUpdatedOn the photoUpdatedOn to set
+   */
+  public void setPhotoUpdatedOn(Date aPhotoUpdatedOn) {
+    photoUpdatedOn = aPhotoUpdatedOn;
   }
 
+  /** @return the archieved */
   public boolean isArchieved() {
     return archieved;
   }
 
-  public void setArchieved(boolean archieved) {
-    this.archieved = archieved;
+  /**
+   * Sets the archieved.
+   *
+   * @param aArchieved the archieved to set
+   */
+  public void setArchieved(boolean aArchieved) {
+    archieved = aArchieved;
   }
 
+  /** @return the iHINUmber */
   public String getIHINUmber() {
     return IHINUmber;
   }
 
-  public void setIHINUmber(String IHINUmber) {
-    this.IHINUmber = IHINUmber;
+  /**
+   * Sets the iHINUmber.
+   *
+   * @param aIHINUmber the iHINUmber to set
+   */
+  public void setIHINUmber(String aIHINUmber) {
+    IHINUmber = aIHINUmber;
   }
 
+  /** @return the medicareNumber */
   public String getMedicareNumber() {
     return medicareNumber;
   }
 
-  public void setMedicareNumber(String medicareNumber) {
-    this.medicareNumber = medicareNumber;
+  /**
+   * Sets the medicareNumber.
+   *
+   * @param aMedicareNumber the medicareNumber to set
+   */
+  public void setMedicareNumber(String aMedicareNumber) {
+    medicareNumber = aMedicareNumber;
   }
 
+  /** @return the dvanumber */
   public String getDvanumber() {
     return dvanumber;
   }
 
-  public void setDvanumber(String dvanumber) {
-    this.dvanumber = dvanumber;
+  /**
+   * Sets the dvanumber.
+   *
+   * @param aDvanumber the dvanumber to set
+   */
+  public void setDvanumber(String aDvanumber) {
+    dvanumber = aDvanumber;
   }
 
+  /** @return the facilityId */
   public Integer getFacilityId() {
     return facilityId;
   }
 
-  public void setFacilityId(Integer facilityId) {
-    this.facilityId = facilityId;
+  /**
+   * Sets the facilityId.
+   *
+   * @param aFacilityId the facilityId to set
+   */
+  public void setFacilityId(Integer aFacilityId) {
+    facilityId = aFacilityId;
   }
 
+  /** @return the acfiReAppraisalType */
   public Object getAcfiReAppraisalType() {
     return acfiReAppraisalType;
   }
 
-  public void setAcfiReAppraisalType(Object acfiReAppraisalType) {
-    this.acfiReAppraisalType = acfiReAppraisalType;
+  /**
+   * Sets the acfiReAppraisalType.
+   *
+   * @param aAcfiReAppraisalType the acfiReAppraisalType to set
+   */
+  public void setAcfiReAppraisalType(Object aAcfiReAppraisalType) {
+    acfiReAppraisalType = aAcfiReAppraisalType;
   }
 
+  /** @return the acfiAppraisalType */
   public Object getAcfiAppraisalType() {
     return acfiAppraisalType;
   }
 
-  public void setAcfiAppraisalType(Object acfiAppraisalType) {
-    this.acfiAppraisalType = acfiAppraisalType;
+  /**
+   * Sets the acfiAppraisalType.
+   *
+   * @param aAcfiAppraisalType the acfiAppraisalType to set
+   */
+  public void setAcfiAppraisalType(Object aAcfiAppraisalType) {
+    acfiAppraisalType = aAcfiAppraisalType;
   }
 
+  /** @return the applicableAdmissionDate */
   public Date getApplicableAdmissionDate() {
     return applicableAdmissionDate;
   }
 
-  public void setApplicableAdmissionDate(Date applicableAdmissionDate) {
-    this.applicableAdmissionDate = applicableAdmissionDate;
+  /**
+   * Sets the applicableAdmissionDate.
+   *
+   * @param aApplicableAdmissionDate the applicableAdmissionDate to set
+   */
+  public void setApplicableAdmissionDate(Date aApplicableAdmissionDate) {
+    applicableAdmissionDate = aApplicableAdmissionDate;
   }
 
+  /** @return the createdDate */
   public Date getCreatedDate() {
     return createdDate;
   }
 
-  public void setCreatedDate(Date createdDate) {
-    this.createdDate = createdDate;
+  /**
+   * Sets the createdDate.
+   *
+   * @param aCreatedDate the createdDate to set
+   */
+  public void setCreatedDate(Date aCreatedDate) {
+    createdDate = aCreatedDate;
   }
 
+  /** @return the alertId */
   public Integer getAlertId() {
     return alertId;
   }
 
-  public void setAlertId(Integer alertId) {
-    this.alertId = alertId;
+  /**
+   * Sets the alertId.
+   *
+   * @param aAlertId the alertId to set
+   */
+  public void setAlertId(Integer aAlertId) {
+    alertId = aAlertId;
   }
 
+  /** @return the admissionType */
   public Object getAdmissionType() {
     return admissionType;
   }
 
-  public void setAdmissionType(Object admissionType) {
-    this.admissionType = admissionType;
+  /**
+   * Sets the admissionType.
+   *
+   * @param aAdmissionType the admissionType to set
+   */
+  public void setAdmissionType(Object aAdmissionType) {
+    admissionType = aAdmissionType;
   }
 
+  /** @return the contactDetails */
   public String getContactDetails() {
     return contactDetails;
   }
 
-  public void setContactDetails(String contactDetails) {
-    this.contactDetails = contactDetails;
+  /**
+   * Sets the contactDetails.
+   *
+   * @param aContactDetails the contactDetails to set
+   */
+  public void setContactDetails(String aContactDetails) {
+    contactDetails = aContactDetails;
+  }
+
+  /** @return the suggestString */
+  public String getSuggestString() {
+    return suggestString;
+  }
+
+  /**
+   * Sets the suggestString.
+   *
+   * @param aSuggestString the suggestString to set
+   */
+  public void setSuggestString(String aSuggestString) {
+    suggestString = aSuggestString;
+  }
+
+  /** @return the suggestId */
+  public String getSuggestId() {
+    return suggestId;
+  }
+
+  /**
+   * Sets the suggestId.
+   *
+   * @param aSuggestId the suggestId to set
+   */
+  public void setSuggestId(String aSuggestId) {
+    suggestId = aSuggestId;
+  }
+
+  /** @return the fullName */
+  public String getFullName() {
+    return fullName;
+  }
+
+  /**
+   * Sets the fullName.
+   *
+   * @param aFullName the fullName to set
+   */
+  public void setFullName(String aFullName) {
+    fullName = aFullName;
   }
 
   @Override
@@ -204,31 +369,12 @@ public class PersonMinimalDetails
     return super.equals(obj);
   }
 
-  public String getFullName() {
-    return (this.getFirstName() == null ? "" : this.getFirstName().trim())
-        + " "
-        + (this.getLastName() == null ? "" : this.getLastName().toUpperCase().trim());
-  }
-
-  public String getSuggestId() {
-    return String.valueOf(this.getPersonId());
-  }
-
-  public String getSuggestString() {
-    return getFullName() + " " + getPreferredName();
-  }
-
   @Override
   public int compareTo(PersonMinimalDetails o) {
-    //
-    // PLATM-905 - Avoid residents with same surname gets removed in Java List collections.
-    // Also resolved issues occurred in SPPRT-5253
-
     int result = this.getLastName().compareToIgnoreCase(o.getLastName());
     if (result == 0) {
       return this.getFirstName().compareToIgnoreCase(o.getFirstName());
     }
-
     return result;
   }
 
