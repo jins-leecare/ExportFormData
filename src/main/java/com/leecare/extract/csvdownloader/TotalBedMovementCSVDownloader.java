@@ -43,7 +43,9 @@ public class TotalBedMovementCSVDownloader extends CommonCSVDownloader<TotalBedM
     List<TotalBedMovement> bedMovements = dataExtractionService.extractTotalBedMovements(aParams);
     if (Objects.nonNull(bedMovements) || !bedMovements.isEmpty()) {
       Map<String, String> fieldMapping = CsvToUiFieldMappingLoader.loadMapping("bedMovements");
-      super.downloadBedMovementCSV(
+      Map<Integer, List<TotalBedMovement>> bedMovementsMap = createHashMap(bedMovements);
+      super.prepareSummaryCSV(bedMovementsMap, "Total_BedMovements", aParams, fieldMapping);
+      super.downloadCSVFromList(
           aParams, "BED-MOVEMENTS", "Total_BedMovements", bedMovements, fieldMapping);
     }
   }
@@ -54,5 +56,22 @@ public class TotalBedMovementCSVDownloader extends CommonCSVDownloader<TotalBedM
     } catch (ParseException ex) {
       return DATE_FORMAT2.parse(aDateStringValue);
     }
+  }
+
+  private static Map<Integer, List<TotalBedMovement>> createHashMap(List<TotalBedMovement> aTotalBedMovement) {
+    Map<Integer, List<TotalBedMovement>> totalBedMovementMap = new HashMap<>();
+
+    for (TotalBedMovement totalBedMovement : aTotalBedMovement) {
+      int personId = totalBedMovement.getResidentID();
+      List<TotalBedMovement> totalBedMovementList;
+      if (totalBedMovementMap.containsKey(personId)) {
+        totalBedMovementList = totalBedMovementMap.get(personId);
+      } else {
+        totalBedMovementList = new ArrayList<>();
+      }
+      totalBedMovementList.add(totalBedMovement);
+      totalBedMovementMap.put(personId, totalBedMovementList);
+    }
+    return totalBedMovementMap;
   }
 }

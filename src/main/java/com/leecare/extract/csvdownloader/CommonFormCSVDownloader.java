@@ -17,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -24,6 +25,9 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.leecare.extract.utils.ExtractionUtils.*;
+
 
 /**
  * This is used for a CommonFormCSVDownloader.
@@ -182,7 +186,9 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             row.add(getLoggedBy(fieldValues));
             row.add(recordID.toString());
             row.add(DATE_FORMAT.format(getRecordDate(fieldValues)));
-            row.add(getTotalScore(fieldValues));
+            if (aFormName.equalsIgnoreCase("frmGENVitalSigns")) {
+              row.add(getTotalScore(fieldValues));
+            }
 
             // Get the field values for the current resident and recordID
             // Add field values to the row
@@ -254,7 +260,8 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
 
   @Override
   public void prepareSummaryCSV(
-      Map<Integer, ?> aResidentDetailsMap, String aFormName, InputParameters aParams) {
+          Map<Integer, ?> aResidentDetailsMap, String aFormName, InputParameters aParams,
+          Map<String, String> aFieldMapping) {
 
     String filePath = createFolder(aParams.getConfigProperties().getFilePath(), "FORMS");
     String subFolderPath = createFolder(filePath, "SUMMARY");
@@ -313,27 +320,60 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
               ResidentDetails details = (ResidentDetails) value;
               int totalFields = details.getFieldValueMap().size();
               int fieldsWithValues =
-                  (int)
-                      details
-                          .getFieldValueMap()
-                          .values()
-                          .stream()
-                          .filter(fieldValue -> fieldValue.getValue() != null)
-                          .count();
+                      (int)
+                              details
+                                      .getFieldValueMap()
+                                      .values()
+                                      .stream()
+                                      .filter(fieldValue -> fieldValue.getValue() != null)
+                                      .count();
               newRow[columnMap.get(aFormName)] = totalFields + " (" + fieldsWithValues + ")";
             } else if (value instanceof ResidentRecordDetails) {
               // Handle ResidentRecordDetails
               ResidentRecordDetails recordDetails = (ResidentRecordDetails) value;
-              int totalFields = recordDetails.getFieldValueMap().size();
+              int totalFields = filterMap(recordDetails, aFieldMapping).size();
               int fieldsWithValues =
-                  (int)
-                      recordDetails
-                          .getFieldValueMap()
-                          .values()
-                          .stream()
-                          .flatMap(m -> m.values().stream())
-                          .filter(fieldValue -> checkNonNullValues(fieldValue))
-                          .count();
+                      (int)
+                              filterMap(recordDetails, aFieldMapping)
+                                      .values()
+                                      .stream()
+                                      .flatMap(m -> m.values().stream())
+                                      .filter(fieldValue -> checkNonNullValues(fieldValue))
+                                      .count();
+              newRow[columnMap.get(aFormName)] = totalFields + " (" + fieldsWithValues + ")";
+            } else {
+              Class<?> objectClass = value.getClass();
+
+              // Extract field names using reflection
+              Field[] fields = objectClass.getDeclaredFields();
+              List<Field> fieldList = new ArrayList<>();
+              fieldList.addAll(Arrays.asList(fields));
+
+              objectClass = objectClass.getSuperclass();
+
+              while (objectClass != null) {
+                Field[] parentClassFields = objectClass.getDeclaredFields();
+                fieldList.addAll(Arrays.asList(parentClassFields));
+                objectClass = objectClass.getSuperclass();
+              }
+
+              Integer totalFields = 0;
+              Integer fieldsWithValues = 0;
+              for (Field field : fieldList) {
+                if (!field.getName().equals("signatureImage")) {
+                  totalFields++;
+                  field.setAccessible(true);
+                  try {
+                    Object fieldValue = field.get(value);
+                    if (fieldValue != null) {
+                      fieldsWithValues++;
+                    }
+                  } catch (IllegalAccessException ex) {
+                    logger.debug("Caught exception whiling downloading csv {}, ", ex);
+                  }
+                }
+              }
+
               newRow[columnMap.get(aFormName)] = totalFields + " (" + fieldsWithValues + ")";
             }
           }
@@ -351,49 +391,15 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
     }
   }
 
-  private void writeHeaderAndResidentsToCSV(File file, Map<Integer, ?> aResidentDetailsMap) {
-    try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file))) {
-      String[] headers = {"ResidentID"};
-      csvWriter.writeNext(headers);
-
-      // Write residents separately for the first time
-      for (Map.Entry<Integer, ?> entry : aResidentDetailsMap.entrySet()) {
-        Integer residentId = entry.getKey();
-        Object value = entry.getValue();
-        if (value != null) {
-          String[] dataRow = new String[1];
-          dataRow[0] = residentId.toString();
-          csvWriter.writeNext(dataRow);
-        }
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+  private static Map<String, Map<Integer, FieldValueDetails>> filterMap(ResidentRecordDetails recordDetails,
+                                                                        Map<String, String> aFieldMapping) {
+    if (Objects.isNull(aFieldMapping) || aFieldMapping.isEmpty()) {
+      return recordDetails.getFieldValueMap();
+    } else {
+      return recordDetails.getFieldValueMap().entrySet().stream()
+              .filter(entry -> aFieldMapping.containsKey(entry.getKey()))
+              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
-  }
-
-  private boolean containsResidentID(List<String[]> aCsvData, Integer aResidentID) {
-    for (int i = 1; i < aCsvData.size(); i++) {
-      String[] existingRow = aCsvData.get(i);
-      Integer existingResidentID = Integer.parseInt(existingRow[0]);
-      if (existingResidentID.equals(aResidentID)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean checkNonNullValues(FieldValueDetails aFieldValue) {
-    Boolean nonNullValuePresent = false;
-    if (aFieldValue.getFieldValue() != null) {
-      return true;
-    } else if (aFieldValue.getValueDate() != null) {
-      return true;
-    } else if (aFieldValue.getValueNumber() != null && aFieldValue.getValueNumber() != 0.0) {
-      return true;
-    } else if (aFieldValue.getValueBit() != null) {
-      return true;
-    }
-    return nonNullValuePresent;
   }
 
   private static Date getRecordDate(Map<String, FieldValueDetails> aFieldValues)

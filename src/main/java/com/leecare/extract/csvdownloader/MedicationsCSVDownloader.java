@@ -49,7 +49,7 @@ public class MedicationsCSVDownloader extends CommonFormCSVDownloader {
         dataExtractionService.extractMedicationsDetails(aParams, jsonBody);
     TreeMap<Integer, ResidentRecordDetails> sortedResidentDetailsMap =
         new TreeMap<>(residentDetailsMap);
-    super.prepareSummaryCSV(residentDetailsMap, "medications", aParams);
+    super.prepareSummaryCSV(residentDetailsMap, "medications", aParams, null);
     super.downloadCSVForRange(
         aParams, "MEDICATIONS", aFieldCaptionMapping, "medications", sortedResidentDetailsMap);
   }

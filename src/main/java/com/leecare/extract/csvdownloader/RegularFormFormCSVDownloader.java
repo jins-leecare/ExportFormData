@@ -58,7 +58,7 @@ public class RegularFormFormCSVDownloader extends CommonFormCSVDownloader {
     String jsonBody = "{" + "\"FormName\":\"" + aForm + "\"" + "}";
     Map<Integer, ResidentDetails> residentDetailsMap =
         dataExtractionService.extractFormData(aParams, jsonBody);
-    super.prepareSummaryCSV(residentDetailsMap, aForm, aParams);
+    super.prepareSummaryCSV(residentDetailsMap, aForm, aParams, null);
     super.downloadCSV(aParams, "REGULAR-FORMS", aFieldCaptionMapping, aForm, residentDetailsMap);
   }
 }

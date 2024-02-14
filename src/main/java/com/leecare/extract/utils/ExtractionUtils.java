@@ -8,10 +8,17 @@ package com.leecare.extract.utils;
 
 import com.leecare.extract.csvdownloader.ResidentPDFDownloader;
 import com.leecare.extract.model.ConfigProperties;
+import com.leecare.extract.model.FieldValueDetails;
 import com.leecare.extract.model.InputParameters;
+import com.opencsv.CSVWriter;
 import org.apache.logging.log4j.LogManager;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -114,5 +121,67 @@ public class ExtractionUtils {
       logger.error("Error while reading config file {}", ex);
     }
     return configProperties;
+  }
+
+  /**
+   * Method to write header and residents to summary csv
+   * @param aFile input file
+   * @param aResidentDetailsMap resident details map
+   */
+  public static void writeHeaderAndResidentsToCSV(File aFile, Map<Integer, ?> aResidentDetailsMap) {
+    try (CSVWriter csvWriter = new CSVWriter(new FileWriter(aFile))) {
+      String[] headers = {"ResidentID"};
+      csvWriter.writeNext(headers);
+
+      // Write residents separately for the first time
+      for (Map.Entry<Integer, ?> entry : aResidentDetailsMap.entrySet()) {
+        Integer residentId = entry.getKey();
+        Object value = entry.getValue();
+        if (value != null) {
+          String[] dataRow = new String[1];
+          dataRow[0] = residentId.toString();
+          csvWriter.writeNext(dataRow);
+        }
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Method to check whether the summary csv contains the resident.
+   *
+   * @param aCsvData csv data
+   * @param aResidentID resident id
+   * @return true if csv contains resident, false otherwise.
+   */
+  public static boolean containsResidentID(List<String[]> aCsvData, Integer aResidentID) {
+    for (int i = 1; i < aCsvData.size(); i++) {
+      String[] existingRow = aCsvData.get(i);
+      Integer existingResidentID = Integer.parseInt(existingRow[0]);
+      if (existingResidentID.equals(aResidentID)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Method to check if fieldValueDetails contains null values.
+   * @param aFieldValue fieldValue to check
+   * @return false if null value is present.
+   */
+  public static boolean checkNonNullValues(FieldValueDetails aFieldValue) {
+    Boolean nonNullValuePresent = false;
+    if (aFieldValue.getFieldValue() != null) {
+      return true;
+    } else if (aFieldValue.getValueDate() != null) {
+      return true;
+    } else if (aFieldValue.getValueNumber() != null && aFieldValue.getValueNumber() != 0.0) {
+      return true;
+    } else if (aFieldValue.getValueBit() != null) {
+      return true;
+    }
+    return nonNullValuePresent;
   }
 }

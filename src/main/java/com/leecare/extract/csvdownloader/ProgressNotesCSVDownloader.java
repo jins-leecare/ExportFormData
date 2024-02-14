@@ -63,7 +63,28 @@ public class ProgressNotesCSVDownloader extends CommonCSVDownloader<PersonNoteDe
           }
         });
     Map<String, String> fieldMapping = CsvToUiFieldMappingLoader.loadMapping("progressNotes");
+    Map<Integer, List<PersonNoteDetails>> personNoteDetailsHashMap = createHashMap(personNoteDetails);
+    super.prepareSummaryCSV(personNoteDetailsHashMap, "progressNotes", aParams, fieldMapping);
     super.downloadCSV(
         aParams, "PROGRESS-NOTES", "progressNotes", personNoteDetails, residentMap, fieldMapping);
+  }
+
+  private static Map<Integer, List<PersonNoteDetails>> createHashMap(List<PersonNoteDetails> aPersonNoteDetailsList) {
+    Map<Integer, List<PersonNoteDetails>> personNoteDetailsMap = new HashMap<>();
+
+    for (PersonNoteDetails personNoteDetails : aPersonNoteDetailsList) {
+      if (personNoteDetails.getPersonDetails() != null) {
+        int personId = personNoteDetails.getPersonDetails().getPersonId();
+        List<PersonNoteDetails> personNoteList;
+        if (personNoteDetailsMap.containsKey(personId)) {
+          personNoteList = personNoteDetailsMap.get(personId);
+        } else {
+          personNoteList = new ArrayList<>();
+        }
+        personNoteList.add(personNoteDetails);
+        personNoteDetailsMap.put(personId, personNoteList);
+      }
+    }
+    return personNoteDetailsMap;
   }
 }

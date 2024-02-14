@@ -9,6 +9,7 @@ package com.leecare.extract.csvdownloader;
 import com.leecare.extract.handler.CsvToUiFieldMappingLoader;
 import com.leecare.extract.model.AdverseReactionDetails;
 import com.leecare.extract.model.InputParameters;
+import com.leecare.extract.model.PersonNoteDetails;
 import com.leecare.extract.model.ResidentDetails;
 import com.leecare.extract.service.DataExtractionService;
 import org.apache.logging.log4j.LogManager;
@@ -37,10 +38,10 @@ public class AdverseReactionsCSVDownloader extends CommonCSVDownloader<AdverseRe
   }
 
   @Override
-  public void downloadCSV(InputParameters params) throws IOException, ParseException {
+  public void downloadCSV(InputParameters aParams) throws IOException, ParseException {
     String jsonBody = "{}";
     List<AdverseReactionDetails> adverseReactionDetails =
-        dataExtractionService.extractAdverseReactions(params, jsonBody);
+        dataExtractionService.extractAdverseReactions(aParams, jsonBody);
     if (Objects.isNull(adverseReactionDetails) || adverseReactionDetails.isEmpty()) {
       logger.error(
           "Data is not available for export. Please re-evaluate your parameters for downloading "
@@ -56,16 +57,35 @@ public class AdverseReactionsCSVDownloader extends CommonCSVDownloader<AdverseRe
             residentMap.putIfAbsent(
                 adverseReaction.getResidentId(),
                 dataExtractionService.extractResident(
-                    params, String.valueOf(adverseReaction.getResidentId())));
+                    aParams, String.valueOf(adverseReaction.getResidentId())));
           }
         });
     Map<String, String> fieldMapping = CsvToUiFieldMappingLoader.loadMapping("adverseReactions");
+    Map<Integer, List<AdverseReactionDetails>> adverseReactionDetailsMap = createHashMap(adverseReactionDetails);
+    super.prepareSummaryCSV(adverseReactionDetailsMap, "Adverse Reactions", aParams, fieldMapping);
     super.downloadCSV(
-        params,
+        aParams,
         "ADVERSE-REACTIONS",
         "adverseReactions",
         adverseReactionDetails,
         residentMap,
         fieldMapping);
+  }
+
+  private static Map<Integer, List<AdverseReactionDetails>> createHashMap(List<AdverseReactionDetails> aAdverseReactionDetails) {
+    Map<Integer, List<AdverseReactionDetails>> adverseReactionDetailsMap = new HashMap<>();
+
+    for (AdverseReactionDetails adverseReactionDetails : aAdverseReactionDetails) {
+        int personId = adverseReactionDetails.getResidentId();
+        List<AdverseReactionDetails> adverseReactionDetailsList;
+        if (adverseReactionDetailsMap.containsKey(personId)) {
+          adverseReactionDetailsList = adverseReactionDetailsMap.get(personId);
+        } else {
+          adverseReactionDetailsList = new ArrayList<>();
+        }
+      adverseReactionDetailsList.add(adverseReactionDetails);
+      adverseReactionDetailsMap.put(personId, adverseReactionDetailsList);
+    }
+    return adverseReactionDetailsMap;
   }
 }

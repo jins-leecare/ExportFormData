@@ -46,8 +46,4 @@ public class AttachmentsDownloader extends CommonFormCSVDownloader {
     }
     saveFileAttachmentsToFolder(params, "ATTACHMENTS", fileAttachments);
   }
-
-  @Override
-  public void prepareSummaryCSV(
-      Map<Integer, ?> residentDetailsMap, String formNam, InputParameters params) {}
 }

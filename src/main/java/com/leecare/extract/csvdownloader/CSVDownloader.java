@@ -18,12 +18,13 @@ public interface CSVDownloader {
 
     /**
      * Method to prepare summary.
-     * 
+     *
      * @param aResidentDetailsMap resident details map (can be null)
-     * @param aFormName form name (not null)
-     * @param aParams parameters (not null)
+     * @param aFormName           form name (not null)
+     * @param aParams             parameters (not null)
+     * @param fieldMapping fieldMapping (can be null)
      */
-    default void prepareSummaryCSV(Map<Integer, ?> aResidentDetailsMap, String aFormName, InputParameters aParams) {
+    default void prepareSummaryCSV(Map<Integer, ?> aResidentDetailsMap, String aFormName, InputParameters aParams, Map<String, String> fieldMapping) {
     }
 
 }

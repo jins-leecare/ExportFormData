@@ -8,10 +8,15 @@ package com.leecare.extract.csvdownloader;
 
 import com.leecare.extract.model.*;
 import com.leecare.extract.utils.StringUtils;
+import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
+import com.opencsv.exceptions.CsvValidationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -19,6 +24,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.leecare.extract.utils.ExtractionUtils.containsResidentID;
+import static com.leecare.extract.utils.ExtractionUtils.writeHeaderAndResidentsToCSV;
 
 /**
  * This is used for a CommonCSVDownloader.
@@ -200,7 +208,7 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
    * @param aRowList row list (can be null)
    * @param aFieldMapping field mapping (can be null)
    */
-  public void downloadBedMovementCSV(
+  public void downloadCSVFromList(
       InputParameters aParams,
       String aSubFolderName,
       String aCsvName,
@@ -265,6 +273,116 @@ public abstract class CommonCSVDownloader<T> implements CSVDownloader {
       } catch (IOException ex) {
         logger.error("Caught exception while dowloading csv {} ", ex);
       }
+    }
+  }
+
+  @Override
+  public void prepareSummaryCSV(
+          Map<Integer, ?> aResidentDetailsMap, String aFormName, InputParameters aParams,
+          Map<String, String> aFieldMapping) {
+
+    String filePath = createFolder(aParams.getConfigProperties().getFilePath(), "FORMS");
+    String subFolderPath = createFolder(filePath, "SUMMARY");
+    String csvFilePath = subFolderPath + "summary.csv";
+
+    File summaryCsvFile = new File(csvFilePath);
+    try {
+      if (Objects.nonNull(aResidentDetailsMap) && !aResidentDetailsMap.isEmpty()) {
+        if (!summaryCsvFile.exists()) {
+          try {
+            summaryCsvFile.createNewFile();
+            // Initialize the file with header and write residents separately for the first time
+            writeHeaderAndResidentsToCSV(summaryCsvFile, aResidentDetailsMap);
+          } catch (IOException ex) {
+            logger.error("Caught Exception while creating summary {}", ex);
+          }
+        }
+
+        List<String[]> csvData = new ArrayList<>();
+        try (CSVReader csvReader = new CSVReader(new FileReader(summaryCsvFile))) {
+          csvData = csvReader.readAll();
+        } catch (CsvValidationException | IOException e) {
+          throw new RuntimeException(e);
+        } catch (CsvException e) {
+          throw new RuntimeException(e);
+        }
+
+        Map<String, Integer> columnMap = new LinkedHashMap<>();
+
+        if (!csvData.isEmpty()) {
+          String[] headers = csvData.get(0);
+          for (int i = 0; i < headers.length; i++) {
+            columnMap.put(headers[i], i);
+          }
+        }
+        if (!columnMap.containsKey(aFormName)) {
+          columnMap.put(aFormName, columnMap.size());
+        }
+        csvData.set(0, columnMap.keySet().toArray(new String[0]));
+
+        for (Integer residentID : aResidentDetailsMap.keySet()) {
+          if (!containsResidentID(csvData, residentID)) {
+            String[] newRow = new String[columnMap.size()];
+            newRow[0] = residentID.toString();
+            csvData.add(newRow);
+          }
+        }
+
+        for (int i = 1; i < csvData.size(); i++) {
+          String[] existingRow = csvData.get(i);
+          String[] newRow = new String[existingRow.length + 1];
+          System.arraycopy(existingRow, 0, newRow, 0, existingRow.length);
+          Integer residentId = Integer.parseInt(newRow[columnMap.get("ResidentID")]);
+          Object value = aResidentDetailsMap.get(residentId);
+          if (value != null && value instanceof List<?>) {
+            List<?> list = (List<?>) value;
+            if (!list.isEmpty()) {
+              Class<?> objectClass = list.get(0).getClass();
+              // Extract field names using reflection
+              Field[] fields = objectClass.getDeclaredFields();
+              List<Field> fieldList = new ArrayList<>();
+              fieldList.addAll(Arrays.asList(fields));
+              objectClass = objectClass.getSuperclass();
+
+              while (objectClass != null) {
+                Field[] parentClassFields = objectClass.getDeclaredFields();
+                fieldList.addAll(Arrays.asList(parentClassFields));
+                objectClass = objectClass.getSuperclass();
+              }
+              Integer totalFields = 0;
+              Integer fieldsWithValues = 0;
+              for (Object record : list) {
+                for (Field field : fieldList) {
+                  if (Objects.isNull(aFieldMapping) || aFieldMapping.containsKey(field.getName())) {
+                    if (!field.getName().equals("signatureImage")) {
+                      totalFields++;
+                      field.setAccessible(true);
+                      try {
+                        Object fieldValue = field.get(record);
+                        if (fieldValue != null) {
+                          fieldsWithValues++;
+                        }
+                      } catch (IllegalAccessException ex) {
+                        logger.debug("Caught exception whiling downloading csv {}, ", ex);
+                      }
+                    }
+                  }
+                }
+              }
+              newRow[columnMap.get(aFormName)] = (totalFields / list.size()) + " (" + fieldsWithValues + ")";
+            }
+          }
+          csvData.set(i, newRow);
+        }
+
+        try (CSVWriter csvWriter = new CSVWriter(new FileWriter(summaryCsvFile))) {
+          csvWriter.writeAll(csvData);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    } catch (Exception exception) {
+      logger.error("Caught Exception while preparing summary report {}", exception);
     }
   }
 

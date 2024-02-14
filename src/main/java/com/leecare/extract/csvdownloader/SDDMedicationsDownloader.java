@@ -35,7 +35,7 @@ public class SDDMedicationsDownloader extends CommonCSVDownloader<MedicationData
   public void downloadCSV(InputParameters aParams) throws IOException, ParseException {
     List<MedicationData> medicationDataList = dataExtractionService.extractSDDMedications(aParams);
     if (Objects.nonNull(medicationDataList) || !medicationDataList.isEmpty()) {
-      super.downloadBedMovementCSV(
+      super.downloadCSVFromList(
           aParams, "SDD-MEDICATIONS", "SDD_medication_master", medicationDataList, null);
     }
   }

@@ -127,7 +127,7 @@ public class BedMovementCSVDownloader extends CommonFormCSVDownloader {
     }
     Map<String, String> fieldCaptionMapping =
         dataExtractionService.extractFieldCaptionMapping(params);
-    super.prepareSummaryCSV(residentDetailsMap, "bedMovement", params);
+    super.prepareSummaryCSV(residentDetailsMap, "bedMovement", params, null);
     super.downloadCSVForRange(
         params, "BED-MOVEMENTS", fieldCaptionMapping, "bedMovement", residentDetailsMap);
   }

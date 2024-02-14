@@ -75,6 +75,7 @@ public class CustomGridFormFormCSVDownloader extends CommonFormCSVDownloader {
     } catch (Exception exception) {
       logger.error("Caught exception while extracting custom grid form {}", exception);
     }
+    super.prepareSummaryCSV(residentDetailsMap, aForm, aParams, aFieldCaptionMapping);
     super.downloadCSVForRange(
         aParams, "CUSTOM-GRID-FORMS", aFieldCaptionMapping, aForm, residentDetailsMap);
   }

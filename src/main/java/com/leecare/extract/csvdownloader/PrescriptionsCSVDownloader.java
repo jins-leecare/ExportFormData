@@ -10,7 +10,6 @@ import com.leecare.extract.model.InputParameters;
 import com.leecare.extract.model.ResidentRecordDetails;
 import com.leecare.extract.service.DataExtractionService;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -45,7 +44,7 @@ public class PrescriptionsCSVDownloader extends CommonFormCSVDownloader {
         dataExtractionService.extractPrescriptionDetails(aParams, jsonBody);
     TreeMap<Integer, ResidentRecordDetails> sortedResidentDetailsMap =
         new TreeMap<>(residentDetailsMap);
-    super.prepareSummaryCSV(residentDetailsMap, "prescriptions", aParams);
+    super.prepareSummaryCSV(residentDetailsMap, "prescriptions", aParams, null);
     super.downloadCSVForRange(
         aParams, "PRESCRIPTIONS", aFieldCaptionMapping, "Prescriptions", sortedResidentDetailsMap);
   }
