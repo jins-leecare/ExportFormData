@@ -39,7 +39,7 @@ public class DataExtractionService {
    */
   public Map<Integer, ResidentDetails> extractFormData(
       InputParameters parameters, String jsonBody) {
-    logger.debug("DEBUG: DataExtract started for " + jsonBody + "at " + LocalDateTime.now());
+    logger.debug("DEBUG: DataExtract started for " + jsonBody + " at " + LocalDateTime.now());
     String url =
         parameters.getConfigProperties().getUrl()
             + "/api/v1/facilities/"
@@ -55,7 +55,7 @@ public class DataExtractionService {
       }
     }
     logger.debug(
-        "DEBUG: DataExtract Result Obtained for " + jsonBody + "at " + LocalDateTime.now());
+        "DEBUG: DataExtract Result Obtained for " + jsonBody + " at " + LocalDateTime.now());
     return resultMap;
   }
 

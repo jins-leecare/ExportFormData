@@ -9,10 +9,11 @@ package com.leecare.extract.model;
 import java.io.Serializable;
 import java.util.Date;
 
+
 /**
- * This is used for a FieldValueDetails.
+ * This is used for a {@code FieldValueDetails}.
  *
- * @author jjoy
+ * @author Jins Joy
  */
 public class FieldValueDetails implements Serializable {
   private Integer recordID;
@@ -26,38 +27,33 @@ public class FieldValueDetails implements Serializable {
   private String valueBit;
   private String fieldName;
   private String fieldCaption;
+  private boolean isResolved;
 
-  /** Constructs a FieldValueDetails. */
-  public FieldValueDetails() {}
+  public FieldValueDetails() {
+  }
 
   /**
    * Constructs a FieldValueDetails.
    *
-   * @param aRecordID recordID
-   * @param aFieldValue fieldValue
-   * @param aDateCreated dateCreated
-   * @param aCreatedBy createdBy
-   * @param aBatchID batchID
-   * @param aSchemaID schemaID
-   * @param aValueDate valueDate
-   * @param aValueNumber valueNumber
-   * @param aValueBit valueBit
-   * @param aFieldName fieldName
-   * @param aFieldCaption fieldCaption
+   * @param aRecordID recordId (can be null)
+   * @param aIsResolved is marked as resolved
+   * @param aFieldValue fieldValue (can be null)
+   * @param aDateCreated dateCreated (can be null)
+   * @param aCreatedBy createdBy (can be null)
+   * @param aBatchID batchID (can be null)
+   * @param aSchemaID schemaID(can be null)
+   * @param aValueDate valueDate (can be null)
+   * @param aValueNumber valueNumber (can be null)
+   * @param aValueBit valueBit (can be null)
+   * @param aFieldName fieldName (can be null)
+   * @param aFieldCaption fieldCaption (can be null)
    */
-  public FieldValueDetails(
-      Integer aRecordID,
-      String aFieldValue,
-      Date aDateCreated,
-      String aCreatedBy,
-      Integer aBatchID,
-      Integer aSchemaID,
-      Date aValueDate,
-      Double aValueNumber,
-      String aValueBit,
-      String aFieldName,
-      String aFieldCaption) {
+  public FieldValueDetails(Integer aRecordID, boolean aIsResolved, String aFieldValue,
+                           Date aDateCreated, String aCreatedBy, Integer aBatchID, Integer aSchemaID, Date aValueDate,
+                           Double aValueNumber, String aValueBit, String aFieldName, String aFieldCaption) {
+    super();
     recordID = aRecordID;
+    isResolved = aIsResolved;
     fieldValue = aFieldValue;
     dateCreated = aDateCreated;
     createdBy = aCreatedBy;
@@ -69,11 +65,12 @@ public class FieldValueDetails implements Serializable {
     fieldName = aFieldName;
     fieldCaption = aFieldCaption;
   }
+
   /**
    * Constructs a FieldValueDetails.
    *
-   * @param aRecordID
-   * @param aFieldValue
+   * @param aRecordID recordID (not null)
+   * @param aFieldValue fieldValue (not null)
    */
   public FieldValueDetails(Integer aRecordID, String aFieldValue) {
     super();
@@ -81,150 +78,226 @@ public class FieldValueDetails implements Serializable {
     fieldValue = aFieldValue;
   }
 
-  /**
-   * Constructs a FieldValueDetails.
-   *
-   * @param aRecordID recordID
-   * @param aFieldValue fieldValue
-   * @param aDateCreated dateCreated
-   * @param aValueDate valueDate
-   */
-  public FieldValueDetails(
-      Integer aRecordID, String aFieldValue, Date aDateCreated, Date aValueDate) {
-    this.recordID = aRecordID;
-    this.fieldValue = aFieldValue;
-    this.dateCreated = aDateCreated;
-    this.valueDate = aValueDate;
+  public FieldValueDetails(Integer recordID, String fieldValue, Date dateCreated, Date valueDate) {
+    this.recordID = recordID;
+    this.fieldValue = fieldValue;
+    this.dateCreated = dateCreated;
+    this.valueDate = valueDate;
   }
 
-  /** @return createdBy */
+  /**
+   * Gets the recordID.
+   *
+   * @return the recordID (not null)
+   */
+  public Integer getRecordID() {
+    return recordID;
+  }
+
+  /**
+   * Sets the recordID.
+   *
+   * @param aRecordID the recordID to set (not null)
+   */
+  public void setRecordID(Integer aRecordID) {
+    recordID = aRecordID;
+  }
+
+  /**
+   * Gets the fieldValue.
+   *
+   * @return the fieldValue (not null)
+   */
+  public String getFieldValue() {
+    return fieldValue;
+  }
+
+  /**
+   * Sets the fieldValue.
+   *
+   * @param aFieldValue the fieldValue to set (not null)
+   */
+  public void setFieldValue(String aFieldValue) {
+    fieldValue = aFieldValue;
+  }
+
+  /**
+   * Gets the dateCreated.
+   *
+   * @return the dateCreated (not null)
+   */
+  public Date getDateCreated() {
+    return dateCreated;
+  }
+
+  /**
+   * Sets the dateCreated.
+   *
+   * @param aDateCreated the dateCreated to set (not null)
+   */
+  public void setDateCreated(Date aDateCreated) {
+    dateCreated = aDateCreated;
+  }
+
+  /**
+   * Gets the createdBy.
+   *
+   * @return the createdBy (not null)
+   */
   public String getCreatedBy() {
     return createdBy;
   }
 
   /**
-   * Sets the createdBy
+   * Sets the createdBy.
    *
-   * @param createdBy
+   * @param aCreatedBy the createdBy to set (not null)
    */
-  public void setCreatedBy(String createdBy) {
-    this.createdBy = createdBy;
+  public void setCreatedBy(String aCreatedBy) {
+    createdBy = aCreatedBy;
   }
 
-  /** @return the recordID */
-  public Integer getRecordID() {
-    return recordID;
-  }
   /**
-   * Sets the recordID.
+   * Gets the batchID.
    *
-   * @param aRecordID the recordID to set
+   * @return the batchID (not null)
    */
-  public void setRecordID(Integer aRecordID) {
-    recordID = aRecordID;
-  }
-  /** @return the fieldValue */
-  public String getFieldValue() {
-    return fieldValue;
-  }
-  /**
-   * Sets the fieldValue.
-   *
-   * @param aFieldValue the fieldValue to set
-   */
-  public void setFieldValue(String aFieldValue) {
-    fieldValue = aFieldValue;
-  }
-  /** @return the dateCreated */
-  public Date getDateCreated() {
-    return dateCreated;
-  }
-  /**
-   * Sets the dateCreated.
-   *
-   * @param aDateCreated the dateCreated to set
-   */
-  public void setDateCreated(Date aDateCreated) {
-    dateCreated = aDateCreated;
-  }
-  /** @return the batchID */
   public Integer getBatchID() {
     return batchID;
   }
+
   /**
    * Sets the batchID.
    *
-   * @param aBatchID the batchID to set
+   * @param aBatchID the batchID to set (not null)
    */
   public void setBatchID(Integer aBatchID) {
     batchID = aBatchID;
   }
-  /** @return the schemaID */
+
+  /**
+   * Gets the schemaID.
+   *
+   * @return the schemaID (not null)
+   */
   public Integer getSchemaID() {
     return schemaID;
   }
+
   /**
    * Sets the schemaID.
    *
-   * @param aSchemaID the schemaID to set
+   * @param aSchemaID the schemaID to set (not null)
    */
   public void setSchemaID(Integer aSchemaID) {
     schemaID = aSchemaID;
   }
-  /** @return the valueDate */
+
+  /**
+   * Gets the valueDate.
+   *
+   * @return the valueDate (not null)
+   */
   public Date getValueDate() {
     return valueDate;
   }
+
   /**
    * Sets the valueDate.
    *
-   * @param aValueDate the valueDate to set
+   * @param aValueDate the valueDate to set (not null)
    */
   public void setValueDate(Date aValueDate) {
     valueDate = aValueDate;
   }
-  /** @return the valueNumber */
+
+  /**
+   * Gets the valueNumber.
+   *
+   * @return the valueNumber (not null)
+   */
   public Double getValueNumber() {
     return valueNumber;
   }
+
   /**
    * Sets the valueNumber.
    *
-   * @param aValueNumber the valueNumber to set
+   * @param aValueNumber the valueNumber to set (not null)
    */
   public void setValueNumber(Double aValueNumber) {
     valueNumber = aValueNumber;
   }
-  /** @return valueBit */
+
+  /**
+   * Gets the valueBit.
+   *
+   * @return the valueBit (not null)
+   */
   public String getValueBit() {
     return valueBit;
   }
-  /** @param aValueBit */
+
+  /**
+   * Sets the valueBit.
+   *
+   * @param aValueBit the valueBit to set (not null)
+   */
   public void setValueBit(String aValueBit) {
     valueBit = aValueBit;
   }
-  /** @return the fieldName */
+
+  /**
+   * Gets the fieldName.
+   *
+   * @return the fieldName (not null)
+   */
   public String getFieldName() {
     return fieldName;
   }
+
   /**
    * Sets the fieldName.
    *
-   * @param aFieldName the fieldName to set
+   * @param aFieldName the fieldName to set (not null)
    */
   public void setFieldName(String aFieldName) {
     fieldName = aFieldName;
   }
-  /** @return the fieldCaption */
+
+  /**
+   * Gets the fieldCaption.
+   *
+   * @return the fieldCaption (not null)
+   */
   public String getFieldCaption() {
     return fieldCaption;
   }
+
   /**
    * Sets the fieldCaption.
    *
-   * @param aFieldCaption the fieldCaption to set
+   * @param aFieldCaption the fieldCaption to set (not null)
    */
   public void setFieldCaption(String aFieldCaption) {
     fieldCaption = aFieldCaption;
+  }
+
+  /**
+   * Gets the isResolved.
+   *
+   * @return the isResolved (not null)
+   */
+  public boolean isResolved() {
+    return isResolved;
+  }
+
+  /**
+   * Sets the isResolved.
+   *
+   * @param aIsResolved the isResolved to set (not null)
+   */
+  public void setResolved(boolean aIsResolved) {
+    isResolved = aIsResolved;
   }
 }

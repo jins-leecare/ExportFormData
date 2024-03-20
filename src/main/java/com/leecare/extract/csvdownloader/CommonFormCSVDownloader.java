@@ -13,6 +13,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,7 +59,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
               + aFormName);
       return;
     }
-    logger.debug("CSV Generation started for " + aFormName + "at " + LocalDateTime.now());
+    logger.debug("CSV Generation started for " + aFormName + " at " + LocalDateTime.now());
     String filePath = createFolder(aParams.getConfigProperties().getFilePath(), "FORMS");
     String subFolderPath = createFolder(filePath, aSubFolder);
 
@@ -68,7 +69,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             + sanitizeFilename(aFieldNameCaptionMapping.getOrDefault(aFormName, aFormName))
             + ".csv",
         aFieldNameCaptionMapping);
-    logger.debug("CSV Generated successfully for " + aFormName + "at " + LocalDateTime.now());
+    logger.debug("CSV Generated successfully for " + aFormName + " at " + LocalDateTime.now());
   }
 
   /**
@@ -101,6 +102,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
     String csvFilePath =
         subFolderPath
             + sanitizeFilename(aFieldNameCaptionMapping.getOrDefault(aFormName, aFormName))
+            + (aSubFolder.contains("GRID") ? "_grid" : "")
             + ".csv";
 
     if (!aResidentDetailsMap.isEmpty()) {
@@ -117,9 +119,10 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             || aFormName.equalsIgnoreCase("medications")) {
           headerList.add("prescriptionDetailsID");
         } else {
-          headerList.add("RecordID");
+          headerList.add("Record ID");
         }
         headerList.add("DateCreated");
+        headerList.add("Mark as Resolved");
         if (aFormName.equalsIgnoreCase("frmGENVitalSigns")) {
           headerList.add("(Neurological Observations) Total Score");
         }
@@ -128,20 +131,22 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
 
         for (ResidentRecordDetails resident : aResidentDetailsMap.values()) {
           for (String newFieldName : resident.getFieldValueMap().keySet()) {
+            boolean addFieldToFieldList;
             if (!fieldNames.contains(newFieldName)) {
+              addFieldToFieldList = true;
               FieldValueDetails fieldValueDetails =
-                  resident.getFieldValueMap().get(newFieldName).values().stream().findFirst().get();
+                      resident.getFieldValueMap().get(newFieldName).values().stream().findFirst().get();
               if (Objects.isNull(fieldValueDetails.getFieldCaption())
-                  || fieldValueDetails.getFieldCaption().equals(fieldValueDetails.getFieldName())) {
+                      || fieldValueDetails.getFieldCaption().equals(fieldValueDetails.getFieldName())) {
                 String caption = aFieldNameCaptionMapping.getOrDefault(newFieldName, newFieldName);
                 boolean captionHasValue = resident.getFieldValueMap().containsKey(newFieldName);
 
                 if (captionHasValue
-                    && aFieldNameCaptionMapping
-                            .values()
-                            .stream()
-                            .filter(value -> value != null && value.equalsIgnoreCase(caption))
-                            .count()
+                        && aFieldNameCaptionMapping
+                        .values()
+                        .stream()
+                        .filter(value -> value != null && value.equalsIgnoreCase(caption))
+                        .count()
                         > 1) {
                   headerList.add(escapeField(caption) + " (" + escapeField(newFieldName) + ")");
                 } else {
@@ -154,13 +159,20 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
                 } else {
                   if (aFormName.equalsIgnoreCase("frmGENVitalSigns")) {
                     headerList.add(
-                        escapeField(aFieldNameCaptionMapping.getOrDefault(newFieldName, caption)));
+                            escapeField(aFieldNameCaptionMapping.getOrDefault(newFieldName, caption)));
                   } else {
-                    headerList.add(escapeField(caption));
+                    String columnName = escapeField(caption);
+                    if (!containsElement(headerList, columnName)) {
+                      headerList.add(escapeField(caption));
+                    } else {
+                      addFieldToFieldList = false;
+                    }
                   }
                 }
               }
-              fieldNames.add(newFieldName);
+              if (addFieldToFieldList) {
+                fieldNames.add(newFieldName);
+              }
             }
           }
         }
@@ -186,6 +198,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             row.add(getLoggedBy(fieldValues));
             row.add(recordID.toString());
             row.add(DATE_FORMAT.format(getRecordDate(fieldValues)));
+            row.add(getIsMarkAsResolved(fieldValues).toString());
             if (aFormName.equalsIgnoreCase("frmGENVitalSigns")) {
               row.add(getTotalScore(fieldValues));
             }
@@ -208,6 +221,15 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
     }
     logger.debug(
         "CSV Generated(with range) successfully for " + aFormName + "at " + LocalDateTime.now());
+  }
+
+  private static boolean containsElement(List<String> list, String searchElement) {
+    for (String element : list) {
+      if (element.equalsIgnoreCase(searchElement)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private String getTotalScore(Map<String, FieldValueDetails> aFieldValues) {
@@ -444,6 +466,18 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
       }
     }
     return loggedBy;
+  }
+  private static Boolean getIsMarkAsResolved(Map<String, FieldValueDetails> aFieldValues)
+          throws ParseException {
+    Boolean isResolved = null;
+    for (Map.Entry<String, FieldValueDetails> entry : aFieldValues.entrySet()) {
+      FieldValueDetails value = entry.getValue();
+      if (value != null) {
+        isResolved = value.isResolved();
+        break;
+      }
+    }
+    return isResolved;
   }
 
   private static Set<String> extractFieldNames(
