@@ -16,70 +16,108 @@ import java.util.Date;
 @SuppressWarnings("serial")
 public class AdverseReactionDetails extends AdverseReaction {
 
-  private String manifestationStringForReports;
-  private Date createdOnForReport;
-  private String createdUserName;
-  private String subReportDirectory;
-  private String residentName;
+    private String manifestationStringForReports;
+    private Date createdOnForReport;
+    private String createdUserName;
+    private String subReportDirectory;
+    private String residentName;
+    private String accessType;
 
-  /** @return the manifestationStringForReports */
-  public String getManifestationStringForReports() {
-    return manifestationStringForReports;
-  }
-  /**
-   * Sets the manifestationStringForReports.
-   *
-   * @param aManifestationStringForReports the manifestationStringForReports to set
-   */
-  public void setManifestationStringForReports(String aManifestationStringForReports) {
-    manifestationStringForReports = aManifestationStringForReports;
-  }
-  /** @return the createdOnForReport */
-  public Date getCreatedOnForReport() {
-    return createdOnForReport;
-  }
-  /**
-   * Sets the createdOnForReport.
-   *
-   * @param aCreatedOnForReport the createdOnForReport to set
-   */
-  public void setCreatedOnForReport(Date aCreatedOnForReport) {
-    createdOnForReport = aCreatedOnForReport;
-  }
-  /** @return the createdUserName */
-  public String getCreatedUserName() {
-    return createdUserName;
-  }
-  /**
-   * Sets the createdUserName.
-   *
-   * @param aCreatedUserName the createdUserName to set
-   */
-  public void setCreatedUserName(String aCreatedUserName) {
-    createdUserName = aCreatedUserName;
-  }
-  /** @return the subReportDirectory */
-  public String getSubReportDirectory() {
-    return subReportDirectory;
-  }
-  /**
-   * Sets the subReportDirectory.
-   *
-   * @param aSubReportDirectory the subReportDirectory to set
-   */
-  public void setSubReportDirectory(String aSubReportDirectory) {
-    subReportDirectory = aSubReportDirectory;
-  }
-  /** @return the residentName */
-  public String getResidentName() {
-    return residentName;
-  }
-  /**
-   * Sets the residentName.
-   *
-   * @param aResidentName the residentName to set
-   */
-  public void setResidentName(String aResidentName) {
-    residentName = aResidentName;
-  }
+    /**
+     * @return the manifestationStringForReports
+     */
+    public String getManifestationStringForReports() {
+        return manifestationStringForReports;
+    }
+
+    /**
+     * Sets the manifestationStringForReports.
+     *
+     * @param aManifestationStringForReports the manifestationStringForReports to set
+     */
+    public void setManifestationStringForReports(String aManifestationStringForReports) {
+        manifestationStringForReports = aManifestationStringForReports;
+    }
+
+    /**
+     * @return the createdOnForReport
+     */
+    public Date getCreatedOnForReport() {
+        return createdOnForReport;
+    }
+
+    /**
+     * Sets the createdOnForReport.
+     *
+     * @param aCreatedOnForReport the createdOnForReport to set
+     */
+    public void setCreatedOnForReport(Date aCreatedOnForReport) {
+        createdOnForReport = aCreatedOnForReport;
+    }
+
+    /**
+     * @return the createdUserName
+     */
+    public String getCreatedUserName() {
+        return createdUserName;
+    }
+
+    /**
+     * Sets the createdUserName.
+     *
+     * @param aCreatedUserName the createdUserName to set
+     */
+    public void setCreatedUserName(String aCreatedUserName) {
+        createdUserName = aCreatedUserName;
+    }
+
+    /**
+     * @return the subReportDirectory
+     */
+    public String getSubReportDirectory() {
+        return subReportDirectory;
+    }
+
+    /**
+     * Sets the subReportDirectory.
+     *
+     * @param aSubReportDirectory the subReportDirectory to set
+     */
+    public void setSubReportDirectory(String aSubReportDirectory) {
+        subReportDirectory = aSubReportDirectory;
+    }
+
+    /**
+     * @return the residentName
+     */
+    public String getResidentName() {
+        return residentName;
+    }
+
+    /**
+     * Sets the residentName.
+     *
+     * @param aResidentName the residentName to set
+     */
+    public void setResidentName(String aResidentName) {
+        residentName = aResidentName;
+    }
+
+    /**
+     * Method to get the access type.
+     *
+     * @return the accessType (not null)
+     */
+    public String getAccessType() {
+        return accessType;
+    }
+
+    /**
+     * Method to set the access type.
+     *
+     * @param aAccessType the accessType to set (not null)
+     */
+    public void setAccessType(String aAccessType) {
+        accessType = aAccessType;
+    }
 }

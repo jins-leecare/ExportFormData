@@ -38,6 +38,10 @@ import static com.leecare.extract.utils.ExtractionUtils.*;
 public abstract class CommonFormCSVDownloader implements CSVDownloader {
   private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
   private static final Logger logger = LogManager.getLogger(CommonFormCSVDownloader.class);
+
+  private static final List<String> formsWithMarkAsResolved
+          = Arrays.asList("frmASSFallsSafetyArray", "frmASSBehaviourEvaluationArray",
+                          "frm_SG_MSW", "sub_SG_MSW", "frmASSWoundAssessmentArray", "frmGENInfectionArray");
   /**
    * Method to download csv of regular forms
    *
@@ -102,7 +106,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
     String csvFilePath =
         subFolderPath
             + sanitizeFilename(aFieldNameCaptionMapping.getOrDefault(aFormName, aFormName))
-            + (aSubFolder.contains("GRID") ? "_grid" : "")
+            + (aFormName.equals("frmASSFoodFlSUB") ? "_grid" : "")
             + ".csv";
 
     if (!aResidentDetailsMap.isEmpty()) {
@@ -122,7 +126,9 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
           headerList.add("Record ID");
         }
         headerList.add("DateCreated");
-        headerList.add("Mark as Resolved");
+        if (formsWithMarkAsResolved.contains(aFormName)) {
+          headerList.add("Mark as Resolved");
+        }
         if (aFormName.equalsIgnoreCase("frmGENVitalSigns")) {
           headerList.add("(Neurological Observations) Total Score");
         }
@@ -198,7 +204,9 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
             row.add(getLoggedBy(fieldValues));
             row.add(recordID.toString());
             row.add(DATE_FORMAT.format(getRecordDate(fieldValues)));
-            row.add(getIsMarkAsResolved(fieldValues).toString());
+            if (formsWithMarkAsResolved.contains(aFormName)) {
+              row.add(getIsMarkAsResolved(fieldValues).toString());
+            }
             if (aFormName.equalsIgnoreCase("frmGENVitalSigns")) {
               row.add(getTotalScore(fieldValues));
             }
@@ -224,6 +232,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
   }
 
   private static boolean containsElement(List<String> list, String searchElement) {
+    searchElement  = searchElement.replaceAll(":$", "");
     for (String element : list) {
       if (element.equalsIgnoreCase(searchElement)) {
         return true;
