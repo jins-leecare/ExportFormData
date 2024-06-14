@@ -32,10 +32,13 @@ public class WeightAndVitalUtils {
   public static int generateGcsScore(
       String aEyeOpening, String aVerbalResponse, String aMotorResponse) {
     int gcsScore = 0;
-    if (aEyeOpening != null) gcsScore += Integer.valueOf(aEyeOpening);
-    if (aVerbalResponse != null) gcsScore += Integer.valueOf(aVerbalResponse);
-    if (aMotorResponse != null && !aMotorResponse.equals(4))
-      gcsScore += Integer.valueOf(aMotorResponse);
+    try {
+      if (aEyeOpening != null) gcsScore += Integer.valueOf(aEyeOpening);
+      if (aVerbalResponse != null) gcsScore += Integer.valueOf(aVerbalResponse);
+      if (aMotorResponse != null && !aMotorResponse.equals(4))
+        gcsScore += Integer.valueOf(aMotorResponse);
+    } catch (Exception ex) {
+    }
     return gcsScore;
   }
   /**
