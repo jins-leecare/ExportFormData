@@ -281,7 +281,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
       byte[] decodedBytes = Base64.getDecoder().decode(fileAttachment.getFileData());
       String newFileName =
           filePath
-              + fileAttachment.getTitle()
+              + sanitizeFilename(fileAttachment.getTitle())
               + "."
               + mimeTypeToExtension(fileAttachment.getMimeType());
 
@@ -716,6 +716,18 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
       return "jpeg";
     } else if (aMimeType.equalsIgnoreCase("image/png")) {
       return "png";
+    } else if (aMimeType.equalsIgnoreCase("application/pdf")) {
+      return "pdf";
+    } else if (aMimeType.equalsIgnoreCase("text/plain")) {
+      return "txt";
+    } else if (aMimeType.equalsIgnoreCase("text/csv")) {
+      return "csv";
+    } else if (aMimeType.equalsIgnoreCase("text/xml")) {
+      return "xml";
+    } else if (aMimeType.equalsIgnoreCase("application/vnd.ms-e")) {
+      return "xls";
+    } else if (aMimeType.equalsIgnoreCase("application/vnd.open")) {
+      return "docx";
     }
     return "";
   }
