@@ -272,11 +272,17 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
     String folderPathToForms = createFolder(aParams.getConfigProperties().getFilePath(), "FORMS");
     String subFolderPath = createFolder(folderPathToForms, aSubFolderName);
     for (FileAttachment fileAttachment : aFileAttachments) {
-      String filePath = "";
+      String filePath = subFolderPath;
+      if (fileAttachment.getResidentID() != null) {
+        filePath = createFolder(filePath, fileAttachment.getResidentID().toString());
+      }
+      if (fileAttachment.getFormName() != null) {
+        filePath = createFolder(filePath, fileAttachment.getFormName());
+      }
       if (fileAttachment.getRecordID() != null) {
-        filePath = createFolder(subFolderPath, fileAttachment.getRecordID().toString());
+        filePath = createFolder(filePath, fileAttachment.getRecordID().toString());
       } else {
-        filePath = createFolder(subFolderPath, fileAttachment.getFileBatchID().toString());
+        filePath = createFolder(filePath, fileAttachment.getFileBatchID().toString());
       }
       byte[] decodedBytes = Base64.getDecoder().decode(fileAttachment.getFileData());
       String newFileName =
