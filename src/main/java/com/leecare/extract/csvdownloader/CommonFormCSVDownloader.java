@@ -281,16 +281,21 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
       }
       if (fileAttachment.getRecordID() != null) {
         filePath = createFolder(filePath, fileAttachment.getRecordID().toString());
-      } else {
+      } else if (fileAttachment.getFileBatchID() != null) {
         filePath = createFolder(filePath, fileAttachment.getFileBatchID().toString());
       }
       byte[] decodedBytes = Base64.getDecoder().decode(fileAttachment.getFileData());
-      String newFileName =
-          filePath
-              + sanitizeFilename(fileAttachment.getTitle())
-              + "."
-              + mimeTypeToExtension(fileAttachment.getMimeType());
-
+      String newFileName = null;
+      if (fileAttachment.getFileName().contains(".")) {
+        newFileName =
+                filePath
+                        + sanitizeFilename(fileAttachment.getFileName());
+      } else {
+        newFileName = filePath
+                + sanitizeFilename(fileAttachment.getTitle())
+                + "."
+                + mimeTypeToExtension(fileAttachment.getMimeType());
+      }
       saveBase64ToFile(decodedBytes, newFileName);
     }
   }
