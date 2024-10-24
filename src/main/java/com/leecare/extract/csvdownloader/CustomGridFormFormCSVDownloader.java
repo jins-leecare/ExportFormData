@@ -77,6 +77,6 @@ public class CustomGridFormFormCSVDownloader extends CommonFormCSVDownloader {
     }
     super.prepareSummaryCSV(residentDetailsMap, aForm, aParams, aFieldCaptionMapping);
     super.downloadCSVForRange(
-        aParams, "CUSTOM-GRID-FORMS", aFieldCaptionMapping, aForm, residentDetailsMap);
+        aParams, "CUSTOM-GRID-FORMS", aFieldCaptionMapping, aForm, residentDetailsMap, false);
   }
 }

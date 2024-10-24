@@ -62,8 +62,8 @@ public class SubFormFormCSVDownloader extends CommonFormCSVDownloader {
         "}";
     Map<Integer, ResidentRecordDetails> residentDetailsMap =
         dataExtractionService.extractGridFormData(aParams, jsonBody);
-    super.prepareSummaryCSV(residentDetailsMap, aForm, aParams, null);
+    //super.prepareSummaryCSV(residentDetailsMap, aForm, aParams, null);
     super.downloadCSVForRange(
-        aParams, "SUB-FORMS", aFieldCaptionMapping, aForm, residentDetailsMap);
+        aParams, "SUB-FORMS", aFieldCaptionMapping, aForm, residentDetailsMap, false);
   }
 }

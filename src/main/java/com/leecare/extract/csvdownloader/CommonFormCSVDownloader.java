@@ -13,7 +13,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -79,35 +78,37 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
   /**
    * Method to download csv for a date range/latest version.
    *
-   * @param aParams parameters (not null)
-   * @param aSubFolder subfolder name (not null)
+   * @param aParams                  parameters (not null)
+   * @param aSubFolder               subfolder name (not null)
    * @param aFieldNameCaptionMapping field caption mapping (can be null)
-   * @param aFormName form name (not null)
-   * @param aResidentDetailsMap resident details map (can be null)
+   * @param aFormName                form name (not null)
+   * @param aResidentDetailsMap      resident details map (can be null)
+   * @param aIsRegularForm           whether its a regular form or not
    */
   public void downloadCSVForRange(
-      InputParameters aParams,
-      String aSubFolder,
-      Map<String, String> aFieldNameCaptionMapping,
-      String aFormName,
-      Map<Integer, ResidentRecordDetails> aResidentDetailsMap) {
+          InputParameters aParams,
+          String aSubFolder,
+          Map<String, String> aFieldNameCaptionMapping,
+          String aFormName,
+          Map<Integer, ResidentRecordDetails> aResidentDetailsMap, boolean aIsRegularForm) {
+
     if (Objects.isNull(aResidentDetailsMap) || aResidentDetailsMap.isEmpty()) {
       logger.debug(
-          "Data is not available for export. Please re-evaluate your parameters for downloading "
-              + aFormName);
+              "Data is not available for export. Please re-evaluate your parameters for downloading "
+                      + aFormName);
       return;
     }
 
     logger.debug(
-        "CSV Generation(with range) started for " + aFormName + "at " + LocalDateTime.now());
+            "CSV Generation(with range) started for " + aFormName + "at " + LocalDateTime.now());
     String filePath = createFolder(aParams.getConfigProperties().getFilePath(), "FORMS");
 
     String subFolderPath = createFolder(filePath, aSubFolder);
     String csvFilePath =
-        subFolderPath
-            + sanitizeFilename(aFieldNameCaptionMapping.getOrDefault(aFormName, aFormName))
-            + (aFormName.equals("frmASSFoodFlSUB") ? "_grid" : "")
-            + ".csv";
+            subFolderPath
+                    + sanitizeFilename(aFieldNameCaptionMapping.getOrDefault(aFormName, aFormName))
+                    + (aFormName.equals("frmASSFoodFlSUB") ? "_grid" : "")
+                    + ".csv";
 
     if (!aResidentDetailsMap.isEmpty()) {
 
@@ -120,7 +121,7 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
         headerList.add("NRICNumber");
         headerList.add("LoggedByUser");
         if (aFormName.equalsIgnoreCase("prescriptions")
-            || aFormName.equalsIgnoreCase("medications")) {
+                || aFormName.equalsIgnoreCase("medications")) {
           headerList.add("prescriptionDetailsID");
         } else {
           headerList.add("Record ID");
@@ -186,39 +187,58 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
         writer.writeNext(headerList.toArray(new String[0]));
 
         for (Map.Entry<Integer, ResidentRecordDetails> residentEntry :
-            aResidentDetailsMap.entrySet()) {
+                aResidentDetailsMap.entrySet()) {
           Integer residentID = residentEntry.getKey();
           ResidentRecordDetails residentDetails = residentEntry.getValue();
 
           // Extract all distinct recordIDs for the current resident
           TreeSet<Integer> recordIDs = extractAndSortRecordIDs(residentDetails);
+          List<String> previousRow = null;
+
           for (Integer recordID : recordIDs) {
-            List<String> row = new ArrayList<>();
-            row.add(residentID.toString());
-            row.add(residentDetails.getFacilityName());
-            row.add(residentDetails.getResidentName());
-            row.add(DATE_FORMAT.format(residentDetails.getDateOfBirth()));
-            row.add(residentDetails.getNRICNumber());
+            List<String> currentRow = new ArrayList<>();
+
+            currentRow.add(residentID.toString());
+            currentRow.add(residentDetails.getFacilityName());
+            currentRow.add(residentDetails.getResidentName());
+            currentRow.add(DATE_FORMAT.format(residentDetails.getDateOfBirth()));
+            currentRow.add(residentDetails.getNRICNumber());
+
             Map<String, FieldValueDetails> fieldValues =
-                extractFieldValues(residentDetails, recordID, fieldNames);
-            row.add(getLoggedBy(fieldValues));
-            row.add(recordID.toString());
-            row.add(DATE_FORMAT.format(getRecordDate(fieldValues)));
+                    extractFieldValues(residentDetails, recordID, fieldNames);
+            currentRow.add(getLoggedBy(fieldValues));
+            currentRow.add(recordID.toString());
+            currentRow.add(DATE_FORMAT.format(getRecordDate(fieldValues)));
+
             if (formsWithMarkAsResolved.contains(aFormName)) {
-              row.add(getIsMarkAsResolved(fieldValues).toString());
+              currentRow.add(getIsMarkAsResolved(fieldValues).toString());
             }
             if (aFormName.equalsIgnoreCase("frmGENVitalSigns")) {
-              row.add(getTotalScore(fieldValues));
+              currentRow.add(getTotalScore(fieldValues));
             }
 
-            // Get the field values for the current resident and recordID
             // Add field values to the row
             for (String fieldName : fieldNames) {
               String value = getFieldValue(fieldValues.get(fieldName));
-              row.add(escapeField(value));
+              currentRow.add(escapeField(value));
+            }
+            if (aIsRegularForm) {
+              // Handle copying from previous row
+              if (previousRow != null && residentID.equals(Integer.valueOf(previousRow.get(0)))) {
+                // Compare and update fields that changed
+                for (int i = 0; i < currentRow.size(); i++) {
+                  if (currentRow.get(i) == null || currentRow.get(i).isEmpty()) {
+                    currentRow.set(i, previousRow.get(i));
+                  }
+                }
+              }
             }
 
-            writer.writeNext(row.toArray(new String[0]));
+            // Write the row to CSV
+            writer.writeNext(currentRow.toArray(new String[0]));
+
+            // Store current row as previous row for next iteration
+            previousRow = currentRow;
           }
         }
       } catch (IOException ex) {
@@ -228,8 +248,9 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
       }
     }
     logger.debug(
-        "CSV Generated(with range) successfully for " + aFormName + "at " + LocalDateTime.now());
+            "CSV Generated(with range) successfully for " + aFormName + "at " + LocalDateTime.now());
   }
+
 
   private static boolean containsElement(List<String> list, String searchElement) {
     searchElement  = searchElement.replaceAll(":$", "");
@@ -290,6 +311,12 @@ public abstract class CommonFormCSVDownloader implements CSVDownloader {
         newFileName =
                 filePath
                         + sanitizeFilename(fileAttachment.getFileName());
+      } else if (fileAttachment.getFileName() != null && fileAttachment.getMimeType() != null) {
+        newFileName =
+                filePath
+                        + sanitizeFilename(fileAttachment.getFileName())
+                        + "."
+                        + mimeTypeToExtension(fileAttachment.getMimeType());
       } else {
         newFileName = filePath
                 + sanitizeFilename(fileAttachment.getTitle())

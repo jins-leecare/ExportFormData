@@ -129,7 +129,7 @@ public class BedMovementCSVDownloader extends CommonFormCSVDownloader {
         dataExtractionService.extractFieldCaptionMapping(params);
     super.prepareSummaryCSV(residentDetailsMap, "bedMovement", params, null);
     super.downloadCSVForRange(
-        params, "BED-MOVEMENTS", fieldCaptionMapping, "bedMovement", residentDetailsMap);
+        params, "BED-MOVEMENTS", fieldCaptionMapping, "bedMovement", residentDetailsMap, false);
   }
 
   private static Date getFormattedDate(String dateStringValue) throws ParseException {

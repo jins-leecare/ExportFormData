@@ -22,8 +22,8 @@ import java.util.Objects;
  *
  * @author jjoy
  */
-public class GridFormFormCSVDownloader extends CommonFormCSVDownloader {
-  private static final Logger logger = LogManager.getLogger(GridFormFormCSVDownloader.class);
+public class RegularFormRangeCSVDownloader extends CommonFormCSVDownloader {
+  private static final Logger logger = LogManager.getLogger(RegularFormRangeCSVDownloader.class);
   private DataExtractionService dataExtractionService;
 
   /**
@@ -31,7 +31,7 @@ public class GridFormFormCSVDownloader extends CommonFormCSVDownloader {
    *
    * @param aDataExtractionService dataExtractionService (not null)
    */
-  public GridFormFormCSVDownloader(DataExtractionService aDataExtractionService) {
+  public RegularFormRangeCSVDownloader(DataExtractionService aDataExtractionService) {
     this.dataExtractionService = aDataExtractionService;
   }
 
@@ -44,7 +44,7 @@ public class GridFormFormCSVDownloader extends CommonFormCSVDownloader {
       if (Objects.isNull(formNames) || formNames.isEmpty()) {
         logger.error(
             "Data is not available for export. Please re-evaluate your parameters for downloading "
-                + "grid forms");
+                + "regular forms");
         return;
       }
       formNames.forEach(
@@ -64,9 +64,9 @@ public class GridFormFormCSVDownloader extends CommonFormCSVDownloader {
         "\"ToDate\":\"" + aParams.getToDate() + "\"" +
         "}";
     Map<Integer, ResidentRecordDetails> residentDetailsMap =
-        dataExtractionService.extractGridFormData(aParams, jsonBody);
+        dataExtractionService.extractRegularFormDataRange(aParams, jsonBody);
     //super.prepareSummaryCSV(residentDetailsMap, aForm, aParams, null);
     super.downloadCSVForRange(
-        aParams, "GRID-FORMS", aFieldCaptionMapping, aForm, residentDetailsMap, false);
+        aParams, "REGULAR-FORMS", aFieldCaptionMapping, aForm, residentDetailsMap, true);
   }
 }

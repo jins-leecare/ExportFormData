@@ -33,7 +33,7 @@ public class CSVDownloaderFactory {
     } else if (aParameters.getDownloadAttachments()) {
       return new AttachmentsDownloader(aDataExtractionService);
     } else if (aParameters.getRegularForm()) {
-      return new RegularFormFormCSVDownloader(aDataExtractionService);
+      return new RegularFormRangeCSVDownloader(aDataExtractionService);
     } else if (aParameters.getBedMovement()) {
       return new TotalBedMovementCSVDownloader(aDataExtractionService);
     } else if (aParameters.getPrescriptions()) {

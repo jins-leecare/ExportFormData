@@ -46,6 +46,6 @@ public class PrescriptionsCSVDownloader extends CommonFormCSVDownloader {
         new TreeMap<>(residentDetailsMap);
     super.prepareSummaryCSV(residentDetailsMap, "prescriptions", aParams, null);
     super.downloadCSVForRange(
-        aParams, "PRESCRIPTIONS", aFieldCaptionMapping, "Prescriptions", sortedResidentDetailsMap);
+        aParams, "PRESCRIPTIONS", aFieldCaptionMapping, "Prescriptions", sortedResidentDetailsMap, false);
   }
 }

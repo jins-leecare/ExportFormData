@@ -66,6 +66,39 @@ public class DataExtractionService {
    * @param jsonBody jsonBody (not null)
    * @return map of residentId and resident record details (can be null)
    */
+  public Map<Integer, ResidentRecordDetails> extractRegularFormDataRange(
+          InputParameters parameters, String jsonBody) {
+    logger.debug(
+            "DEBUG: Regular FORM DataExtract started for " + jsonBody + "at " + LocalDateTime.now());
+    String url =
+            parameters.getConfigProperties().getUrl()
+                    + "/api/v1/facilities/"
+                    + Integer.parseInt(parameters.getFacilityId())
+                    + "/dataextract/extractRegularFormDataRange";
+    Response response = restController.postAndRetrieveData(parameters, url, jsonBody);
+    Map<Integer, ResidentRecordDetails> resultMap = null;
+    if (Objects.nonNull(response) && response.getStatus() == Response.Status.OK.getStatusCode()) {
+      try {
+        resultMap = response.readEntity(new GenericType<Map<Integer, ResidentRecordDetails>>() {});
+      } catch (Exception ex) {
+        logger.error("Caught exception while extracting grid/sub form data {}", ex);
+      }
+    }
+    logger.debug(
+            "DEBUG: Regular FORM DataExtract result obtained for "
+                    + jsonBody
+                    + "at "
+                    + LocalDateTime.now());
+    return resultMap;
+  }
+
+  /**
+   * Method to extract grid/sub form data.
+   *
+   * @param parameters parameters (not null)
+   * @param jsonBody jsonBody (not null)
+   * @return map of residentId and resident record details (can be null)
+   */
   public Map<Integer, ResidentRecordDetails> extractGridFormData(
       InputParameters parameters, String jsonBody) {
     logger.debug(
@@ -74,7 +107,7 @@ public class DataExtractionService {
         parameters.getConfigProperties().getUrl()
             + "/api/v1/facilities/"
             + Integer.parseInt(parameters.getFacilityId())
-            + "/dataextract/extractFormDataForRange";
+            + "/dataextract/extractFormDataForRange1";
     Response response = restController.postAndRetrieveData(parameters, url, jsonBody);
     Map<Integer, ResidentRecordDetails> resultMap = null;
     if (Objects.nonNull(response) && response.getStatus() == Response.Status.OK.getStatusCode()) {
